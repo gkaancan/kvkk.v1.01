@@ -1,0 +1,16 @@
+<%- include('header'); -%>
+
+<section class="select-firm">
+    <form action="/veri-girisi-firm/add" method="POST">
+      <label for="newFirm">Yeni bir kuruluş ismi girin</label>
+      <input type="text" name="newFirm">
+      <button type="submit" class="btn btn-info" name="add" value="add">Ekle</button>
+      <p style="color: #c2362c;"><%=message%></p>
+    </form>
+
+          
+     
+  </section>
+
+              
+<%- include('footer'); -%>

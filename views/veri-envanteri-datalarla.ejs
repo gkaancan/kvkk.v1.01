@@ -1,0 +1,73 @@
+<%- include('header'); -%>
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1>Veri Envanteri</h1>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem quaerat voluptates nam ducimus accusamus
+        quasi quos corporis fugiat numquam laborum!</p>
+    </div>
+  </div>
+
+<form action="/veri-envanteri/<%=param%>" method="post" class="veri-envanteri-form">  
+<label for="choosefirm">Verilerini görmek istediğiniz kuruluşu seçin</label>
+<select name="choosefirm">
+    <% for(var i = 0; i<firms.length;i++){ %>
+        <option><%=firms[i]%></option>
+    <%}%>
+</select>
+<br>
+  <%if (firms.length){%>
+  <button type="submit" class="btn btn-success">Göster</button>
+  <%}%>
+  <%if (!firms.length){%>
+    <button type="button" class="btn btn-inactive">Göster</button>
+  <%}%>
+  </form>
+
+</form>
+
+<section class = "veri-envanteri-section">
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Departman</th>
+      <th scope="col">Süreç</th>
+      <th scope="col">Veri Kategorisi</th>
+      <th scope="col">Kişisel Veri</th>
+      <th scope="col">Özel Nitelikli Kişisel Veri</th>
+      <th scope="col">İşleme Amaçları</th>
+      <th scope="col">İlgili Kişi</th>
+      <th scope="col">Alıcı / Alıcı Grupları</th>
+      <th scope="col">Teknik Tedbirler</th>
+      <th scope="col">İdari Tedbirler</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>rasras</td>
+      <td>Thornton</td>
+      <td>@fat</td>
+      <td>Jacob</td>
+      <td>Thornton</td>
+      <td>@fat</td>
+      <td>Jacob</td>
+      <td>Thornton</td>
+      <td>@fat</td>
+      <td>@fat</td>
+    </tr>
+
+  </tbody>
+</table>
+
+<button class="btn btn-success">Kopyasını İndir</button>
+</section>
+
+              
+<%- include('footer'); -%>

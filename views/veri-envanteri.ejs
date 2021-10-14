@@ -1,0 +1,26 @@
+<%- include('header'); -%>
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1>Veri Envanteri</h1>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem quaerat voluptates nam ducimus accusamus
+        quasi quos corporis fugiat numquam laborum!</p>
+    </div>
+  </div>
+
+<form action="veri-envanteri" method="post" class="veri-envanteri-form">  
+<label for="choosefirm">Verilerini görmek istediğiniz kuruluşu seçin</label>
+<select name="firm">
+    <% for(var i = 0; i<firms.length;i++){ %>
+        <option><%=firms[i]%></option>
+    <%}%>
+</select>
+<br>
+<%if (firms.length){%>
+<button type="submit" class="btn btn-success">Göster</button>
+<%}%>
+<%if (!firms.length){%>
+  <button type="button" class="btn btn-inactive">Göster</button>
+<%}%>
+</form>
+              
+<%- include('footer'); -%>

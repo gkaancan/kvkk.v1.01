@@ -1,0 +1,28 @@
+<%- include('header'); -%>
+
+<section class="select-firm">
+    
+        
+  <form action="/veri-girisi-firm" method="POST">
+    <label for="firms">Verisini işleyeceğiniz kuruluşun ismi</label>
+      <select name="firms" id="firms">
+        <% for(var i=0 ;i<firms.length; i++) {%>
+            <option><%=firms[i]%></option>
+        <%}%>     
+            </select>
+             <br>
+        <% if(!firms.length){ %>
+          <button type="button" class="btn btn-inactive">Devam Et</button>
+          <%}%>
+          <%if(firms.length){%>
+          <button type="submit" class="btn btn-success" name="contiune" value="contiune">Devam Et</button>
+          <%}%>
+          <button type="submit" class="btn btn-info" name="add" value="add">Kuruluş Ekle</button>
+          </form>
+        
+   
+</section>
+
+
+              
+<%- include('footer'); -%>
