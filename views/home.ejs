@@ -1,6 +1,14 @@
-<%- include('header'); -%>
+<% if (isAuthenticated){ %>
+<%- include('auth_header'); -%>
+<% } %>
+
+<% if (!isAuthenticated){ %>
+    <%- include('header'); -%>
+<% } %>
 
 
 
+
+<div class="spaceforfooter"></div>
               
 <%- include('footer'); -%>

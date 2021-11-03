@@ -1,0 +1,36 @@
+<%- include('header'); -%>
+
+
+<div class="register">
+    <h1>KAYIT OL</h1>
+    <form action="/register" method="post">
+    <input type="text" placeholder="Adınız" name="name" required>
+    <input type="email" placeholder="E-Posta" name="username" id="email" required>
+    <p id="result" style="display: none;"></p>
+    <input type="password" placeholder="Şifre" name="password" id="password" required>
+    <input type="password" placeholder="Şifre (Tekrar)" name="re_password" id = "re_password" required>
+    <div class="warningMessages">
+        <h5 style="color: whitesmoke;">Şifreniz şunları içermelidir:</h5>
+        <p id="letter" class="invalid">En az 1 <b>küçük</b> harf</p>
+        <p id="capital" class="invalid">En az 1 <b>büyük</b> harf</p>
+        <p id="number" class="invalid">En az 1 <b>sayı</b></p>
+        <p id="length" class="invalid">Minimum <b>8 karakter</b></p>
+        <p id="match" class="invalid">Şifre, tekrarı ile eşleşmeli</p>
+    </div>  
+    <button type="submit" >Kayıt Ol</button>
+    <div class="messageText">
+        <%=message%>
+    </div>
+    </form>
+    <p style="color: snow;">Zaten üye misin?</p>
+    <a href="log_in.html" id="register-link">Giriş Yap</a>
+</div>
+
+
+
+
+
+<div class="spaceforfooter"></div>
+
+
+<%- include('footer'); -%>

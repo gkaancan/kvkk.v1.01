@@ -1,0 +1,41 @@
+<% if (isAuthenticated){ %>
+    <%- include('auth_header'); -%>
+    <% } %>
+    
+    <% if (!isAuthenticated){ %>
+        <%- include('header'); -%>
+    <% } %>
+    
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+          <h1>Dökümanlar</h1>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem quaerat voluptates nam ducimus accusamus
+            quasi quos corporis fugiat numquam laborum!</p>
+        </div>
+      </div>
+
+      <div id="dökümanlar">
+
+        <div class="card">
+            <div class="card-header">
+              Dökümanlar
+            </div>
+            <div class="card-body">
+              <div class="docs">
+              <%-htmlString%>
+              </div>
+              <p id="messageElement"></p>
+            </div>
+            <div class="card-footer text-muted">
+              <input type="text" onkeyup="searchDocuments()" name="searchBar" id="searchBar" placeholder="Dökümanlar arasında ara" autocomplete="none">
+              <i class="fas fa-search search-glass"></i>
+              <button disabled class="btn" id="showDocument" onclick="postDocument()" type="submit">Dökümanı Göster</button>
+            </div>
+          </div>
+
+      </div>
+    
+    
+    <div class="spaceforfooter"></div>
+                  
+    <%- include('footer'); -%>

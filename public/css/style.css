@@ -7,6 +7,11 @@
     --liHover:#EEE5E5;
     --headerBackgroud:#bcb8b1;
     --headerActive:#f4f3ee;
+    --veriEnvanteriHover:#e1e5e9;
+    --inactiveButton:#c0cedd;
+    --warning:#B33A3A;
+    --liNumberActive:#a9aaa9;
+    --liNumberDeactive:#212529;
 }
 
 body{
@@ -26,6 +31,10 @@ select{
 #navbar{
     background-color: var(--navbarAndFooter);
 }
+
+ #welcome{
+    padding-right: 1rem;
+} 
 
 #navigation i{
     padding-right:0.3rem;
@@ -73,7 +82,9 @@ select{
     
 
 }
-
+.fa-trash-alt{
+    padding-left: 0.2rem;
+}
 
 .input-panel{
     border: outset var(--green);
@@ -174,7 +185,7 @@ h4
 .carousel-header{
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     flex-wrap: wrap;
     margin-bottom: 2rem;
@@ -186,7 +197,8 @@ h4
     border: var(--headerBackgroud) 0.5px;
     border-radius: 2px;
     margin-bottom: 1rem;
-    
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
     display: flex; 
     text-align: center;
     align-items: center;
@@ -231,22 +243,290 @@ h4
     margin-bottom: 5%;
 }
 
-.btn-inactive
-{
-    background-color: #717375;
+button:disabled,
+button[disabled]{
+  border: 1px solid #999999;
+  background-color: var(--inactiveButton);
+  color: #666666;
+  cursor:not-allowed;
 }
-.btn-inactive:hover
-{
-    cursor:progress;
-}
+
+
 .veri-envanteri-form
 {
     padding-left: 5%;
     padding-bottom: 11rem;
 }
+.veri-envanteri-data-form
+{
+    padding-left: 5%;
+    
+}
 
 .veri-envanteri-section
 {
+    margin-top: 3rem;
     margin-bottom: 10rem;
 }
 
+.veri-envanteri-section tbody tr:hover
+{
+    border: outset black 2px;
+}
+
+
+.footer-margin
+{
+    margin-bottom: 6rem;
+}
+
+button[name="deleteFirmButton"]{
+    position: relative;
+    left: 70%;
+}
+
+.veri-envanteri-buttons{
+    margin-bottom: 2rem;
+}
+
+/* ************************************************************************** */
+/* login ekranı */
+/* ************************************************************************** */
+
+.log_in{
+    position:relative;
+    top: 350px;
+    left: 50%;
+    width: 300px;
+    padding: 40px 20px;
+    transform: translate(-50%,-50%);
+    background-color: var(--navbarAndFooter);
+    text-align: center;
+    margin-bottom: 200px;
+    border-radius: 1rem;
+    border-color: #2c3e50;
+}
+.log_in h1
+{
+    color: white;
+    text-align: center;
+    padding-bottom: 40px;
+    
+}
+.log_in input[name="username"] , input[name="password"]
+{
+    display: block;
+    border: #2c3e50 2px solid;
+    padding: 10px;
+    margin: 10px auto;
+    background: none;
+    text-align: center;
+    color: white;
+    outline: none;
+    width: 200px;
+    border-radius: 10px;
+    transition: 0.125s;
+}
+
+.log_in input[name="username"]:focus , input[name="password"]:focus
+{
+    width: 250px;
+    border: #2ecc71 2px solid;
+}
+
+.log_in button{
+    display: block;
+    border: #2c3e50 2px solid;
+    padding: 10px;
+    margin: 10px auto;
+    background: none;
+    text-align: center;
+    color: white;
+    outline: none;
+    width: 120px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.log_in button:hover
+{
+    background-color: #27ae60;
+}
+.log_in #forget-password{
+    font-size: 0.75rem;
+    position: relative;
+    left: 35%;
+}
+.log_in a:hover{
+    text-decoration:underline;
+}
+
+
+.log_in .haveAccount{
+    padding: 0.5rem;
+    color: white;
+}
+.log_in p
+{
+    color: var(--warning);
+}
+
+
+
+/* **************************** */
+/* register */
+/* **************************** */
+
+.register{
+    position:relative;  
+    left: 50%; 
+    width: 300px;
+    padding: 40px 20px;
+
+    margin-top: 425px;
+
+    transform: translate(-50%,-50%);
+    background-color: var(--navbarAndFooter);
+    text-align: center;
+    border-radius: 1rem;
+    border-color: #2c3e50;
+    
+    
+    
+}
+
+
+.register h1
+{
+    color: white;
+    text-align: center;
+    padding-bottom: 40px;
+    display: inline;
+    
+}
+
+.register input
+{
+    display: block;
+    border: #2c3e50 2px solid;
+    padding: 10px;
+    margin: 10px auto;
+    background: none;
+    text-align: center;
+    color: white;
+    outline: none;
+    width: 200px;
+    border-radius: 10px;
+    transition: 0.125s;
+}
+.register input:focus
+{
+    width: 250px;
+    border: #2ecc71 2px solid;
+}
+
+ .register button{
+    display: block;
+    border: #2c3e50 2px solid;
+    padding: 10px;
+    margin: 10px auto;
+    background: none;
+    text-align: center;
+    color: white;
+    outline: none;
+    width: 120px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.register button:hover
+{
+    background-color: var(--green);
+} 
+
+.register a:hover{
+    text-decoration: underline;
+}
+
+.warningMessages{
+text-align: left;
+display: none;
+}
+.warningMessages p{
+    padding-bottom:0;
+    padding-top: 0;
+}
+
+/* Add a green text color and a checkmark when the requirements are right */
+.valid {
+    color: green;
+  }
+  
+  .valid:before {
+    position: relative;
+    left: -5px;
+    content: "\2714";
+  }
+  
+  /* Add a red text color and an "x" icon when the requirements are wrong */
+  .invalid {
+    color: red;
+  }
+  
+  .invalid:before {
+    position: relative;
+    left: -5px;
+    content: "\2716";
+  }
+
+.spaceforfooter{
+    margin-bottom: 200px;
+}
+.messageText{
+    color: var(--warning);
+}
+/* **************************** */
+/* dökümanlar */
+/* **************************** */
+
+#dökümanlar{
+    width: 90%;
+    position: relative;
+    left: 5%;
+}
+
+
+
+#dökümanlar .card-body{
+    height: 500px;
+}
+
+#dökümanlar i{
+    position: relative;
+    right: 30px;
+}
+#dökümanlar .card-body{
+overflow:auto;
+}
+#dökümanlar .card-body .docs p{
+    cursor: pointer;
+    border-bottom: black 1px solid;
+    padding: 0.5rem 1rem;
+    margin: 0;
+    /* border-left: black 1px solid;
+    border-right: black 1px solid; */
+}
+#dökümanlar .card-body .docs p:first-child{
+border-top: black 1px solid;;
+}
+#dökümanlar .card-body .docs p:hover:not(.active-document){
+ background-color: var(--liNumberActive);
+}
+#showDocument{
+    float: right;
+}
+#messageElement{
+    color:var(--warning);
+}
+
+.active-document{
+    background-color: var(--inactiveButton);
+}

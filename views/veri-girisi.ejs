@@ -32,8 +32,17 @@
       <div class="head" id="İlgili-Kişi">
         İlgili Kişi
       </div>
+      <div class="head" id="Hukuki-Sebebi">
+        Hukuki Sebebi
+      </div>
+      <div class="head" id="Saklama-Süresi">
+        Saklama Süresi
+      </div>
       <div class="head" id="Alıcı-Grupları">
         Alıcı / Alıcı Grupları
+      </div>
+      <div class="head" id="Yabancı-Ülkelere-Aktarılan-Veriler">
+        Yabancı Ülkelere Aktarılan Veriler
       </div>
       <div class="head" id="Teknik-Tedbirler">
         Teknik Tedbirler
@@ -57,6 +66,9 @@
         <li data-target="#myCarousel" data-slide-to="7" style="display: none;"></li>
         <li data-target="#myCarousel" data-slide-to="8" style="display: none;"></li>
         <li data-target="#myCarousel" data-slide-to="9" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="10" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="11" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="12" style="display: none;"></li>
       </ul>
 
       <!-- The slideshow -->
@@ -393,6 +405,71 @@
         </div>
 
         <div class="carousel-item">
+          <h4>Hukuki Sebebi</h4>
+          <div class="input-panel" name="hukukiSebebi">
+            <ul>
+              <li>Sözleşmenin imzalanması<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>Kanunlarda öngörülmesi<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>Açık Rıza alınması<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>Veri Sorumlusunun meşru menfaatleri<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>Özlük Dosyasının Oluşturulması<span><i class="far fa-star" style="display: none;"></i></span></li>
+            </ul>
+            <p></p>
+            <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
+                Dön</button>
+            </div>
+          </div>
+          <div class="inputdiv">
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
+            <i class="far fa-star search-star" onclick='pulse(this)'></i>
+            <i class="fas fa-search search-glass"></i>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <h4>Saklama Süresi</h4>
+          <div class="input-panel" name="saklamaSuresi">
+            <ul>
+              <li>İşten Ayrılmasından İtibaren 10 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>Sözleşmenin Sona Erdiği Tarihten İtibaren<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>Eğitimin Tamamlanmasından İtibaren 1 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>İhalenin Tamamlanmasından İtibaren 10 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>Ziyaretin Tamamlanmasından İtibaren 6 ay<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>Onayın Geri Alındığı Tarihten İtibaren 2 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>Faaliyetin Sona Ermesinden İtibaren 10 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>Etkinliğin Sona Ermesinden İtibaren 2 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>İş İlişkilerinin Sona Ermesinden İtibaren 5 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>Pay Defterinin Saklanma Zorunluluğu Sebebiyle Süresiz<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>Anketin Doldurulduğu Yılın Sona Ermesine Müteakiben 1 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>En Az 2 Yıl Olmak Suretiyle İş Davalarına Konu Olabilmesi Sebebiyle 10 Yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>90 Gün<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>1 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>2 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>3 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>5 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>10 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>13 Ay<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>15 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <li>En Az 20 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+            </ul>
+            <p></p>
+            <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
+                Dön</button>
+            </div>
+          </div>
+          <div class="inputdiv">
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
+            <i class="far fa-star search-star" onclick='pulse(this)'></i>
+            <i class="fas fa-search search-glass"></i>
+          </div>
+        </div>
+
+
+        <div class="carousel-item">
           <h4>Alıcı / Alıcı Grupları</h4>
           <div class="input-panel" name="alıcıGrupları">
             <ul>
@@ -405,6 +482,26 @@
               <li>Tedarikçiler<span><i class="far fa-star" style="display: none;"></i></span></li>
               <li>Topluluk Şirketleri<span><i class="far fa-star" style="display: none;"></i></span></li>
               <li>Yetkili Kamu Kurum ve Kuruluşları<span><i class="far fa-star" style="display: none;"></i></span></li>
+            </ul>
+            <p></p>
+            <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
+                Dön</button>
+            </div>
+          </div>
+          <div class="inputdiv">
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
+            <i class="far fa-star search-star" onclick='pulse(this)'></i>
+            <i class="fas fa-search search-glass"></i>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <h4>Yabancı Ülkelere Aktarılan Veriler</h4>
+          <div class="input-panel" name="yabanciUlkelereAktarilanVeriler">
+            <ul>
+              <li>suat<span><i class="far fa-star" style="display: none;"></i></span></li>
             </ul>
             <p></p>
             <div class="buttons">
@@ -506,8 +603,9 @@
 
 
   </select>
-    <button type="submit" class="btn btn-success">Kaydet</button>
-  </form>
+  
+    <button type="submit" class="btn btn-success" onclick="defineChosens()">Kaydet</button>
+  
 
 
 

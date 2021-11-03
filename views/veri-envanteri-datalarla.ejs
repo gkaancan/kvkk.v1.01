@@ -1,29 +1,33 @@
 <%- include('header'); -%>
+
 <div class="jumbotron jumbotron-fluid">
-    <div class="container">
-      <h1>Veri Envanteri</h1>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem quaerat voluptates nam ducimus accusamus
-        quasi quos corporis fugiat numquam laborum!</p>
-    </div>
+  <div class="container">
+    <h1>Veri Envanteri</h1>
+    <h2><%=param%></h2>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem quaerat voluptates nam ducimus accusamus
+      quasi quos corporis fugiat numquam laborum!</p>
   </div>
+</div>
 
-<form action="/veri-envanteri/<%=param%>" method="post" class="veri-envanteri-form">  
-<label for="choosefirm">Verilerini görmek istediğiniz kuruluşu seçin</label>
-<select name="choosefirm">
-    <% for(var i = 0; i<firms.length;i++){ %>
-        <option><%=firms[i]%></option>
+<form action="/veri-envanteri/<%=param%>" method="post" class="veri-envanteri-data-form"> 
+  <p style="color: darkred;"><%=message%></p>  
+
+  <label for="choosefirm">Verilerini görmek istediğiniz kuruluşu seçin</label>
+  <select name="choosefirm">
+      <% for(var i = 0; i<firms.length;i++){ %>
+          <option><%=firms[i]%></option>
+      <%}%>
+  </select>
+  <br>
+    <%if (firms.length){%>
+    <button type="submit" class="btn btn-success">Göster</button>
     <%}%>
-</select>
-<br>
-  <%if (firms.length){%>
-  <button type="submit" class="btn btn-success">Göster</button>
-  <%}%>
-  <%if (!firms.length){%>
-    <button type="button" class="btn btn-inactive">Göster</button>
-  <%}%>
+    <%if (!firms.length){%>
+      <button type="button" class="btn btn-inactive">Göster</button>
+    <%}%>
+    </form>
+  
   </form>
-
-</form>
 
 <section class = "veri-envanteri-section">
 <table class="table">
@@ -37,15 +41,84 @@
       <th scope="col">Özel Nitelikli Kişisel Veri</th>
       <th scope="col">İşleme Amaçları</th>
       <th scope="col">İlgili Kişi</th>
+      <th scope="col">Hukuki Sebebi</th>
+      <th scope="col">Saklama Süresi</th>
       <th scope="col">Alıcı / Alıcı Grupları</th>
+      <th scope="col">Yabancı Ülkelere Aktarılan Veriler</th>
       <th scope="col">Teknik Tedbirler</th>
       <th scope="col">İdari Tedbirler</th>
     </tr>
   </thead>
   <tbody>
-    <tr>
+    
+    <% for(let i = 0; i < localData.length; i++){ %>
+    <tr class="table-secondary">
+      <th scope="row"><%=i+1%></th>
+      <td><%=localData[i].departman%></td>
+      <td><%=localData[i].surec%></td>
+      <td><%=localData[i].veriKategorisi%></td>
+      <td><%=localData[i].kisiselVeri%></td>
+      <td><%=localData[i].ozelNitelikliKisiselVeri%></td>
+      <td><%=localData[i].islemeAmaclari%></td>
+      <td><%=localData[i].ilgiliKisi%></td>
+      <td><%=localData[i].hukukiSebebi%></td>
+      <td><%=localData[i].saklamaSuresi%></td>
+      <td><%=localData[i].aliciGruplari%></td>
+      <td><%=localData[i].yabanciUlkelereAktarilanVeriler%></td>
+      <td><%=localData[i].teknikTedbirler%></td>
+      <td><%=localData[i].idariTedbirler%></td>
+    </tr>
+    <%}%>
+
+
+
+  </tbody>
+</table>
+
+
+
+
+<form action="/veri-envanteri/<%=param%>" method="post" class="veri-envanteri-buttons">
+<button class="btn btn-success">Kopyasını İndir</button>
+<button type="button" name="deleteRowButton"class="btn btn-inactive">Seçili Veriyi Sil</button>
+<button type="button" name="deleteFirmButton" class=" btn btn-danger" data-toggle="modal" data-target="#exampleModalCenter">Firmayı Sil</button>
+</form>
+
+
+
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Firmayı Sil</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Seçili olan firmayı ve firmanın veri envanterindeki tüm verilerini silmek istediğinizden emin misiniz ?
+        <br>
+        Silmek üzere olduğunuz firmanın ismi: <%=param%>
+      </div>
+      <div class="modal-footer">
+        <form action="/veri-envanteri/<%=param%>" method="post">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Vazgeç</button>
+        <button type="submit" name="deleteFirm" value="1" class="btn btn-danger">Firmayı Sil !</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+
+              
+<%- include('footer'); -%>
+
+    <!-- <tr>
       <th scope="row">1</th>
-      <td>Mark</td>
+      <td><%=param%></td>
       <td>Otto</td>
       <td>@mdo</td>
     </tr>
@@ -61,13 +134,4 @@
       <td>Thornton</td>
       <td>@fat</td>
       <td>@fat</td>
-    </tr>
-
-  </tbody>
-</table>
-
-<button class="btn btn-success">Kopyasını İndir</button>
-</section>
-
-              
-<%- include('footer'); -%>
+    </tr> -->

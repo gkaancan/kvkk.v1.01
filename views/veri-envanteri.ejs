@@ -7,10 +7,11 @@
     </div>
   </div>
 
-<form action="veri-envanteri" method="post" class="veri-envanteri-form">  
+<form action="veri-envanteri" method="post" class="veri-envanteri-form">
+  <p style="color: darkred;"><%=message%></p>  
 <label for="choosefirm">Verilerini görmek istediğiniz kuruluşu seçin</label>
 <select name="firm">
-    <% for(var i = 0; i<firms.length;i++){ %>
+    <% for(var i = 0;  i<firms.length ;i++){ %>
         <option><%=firms[i]%></option>
     <%}%>
 </select>
