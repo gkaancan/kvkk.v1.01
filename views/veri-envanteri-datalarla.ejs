@@ -1,9 +1,10 @@
-<%- include('header'); -%>
+<%- include('auth_header'); -%>
+  
 
 <div class="jumbotron jumbotron-fluid">
   <div class="container">
     <h1>Veri Envanteri</h1>
-    <h2><%=param%></h2>
+     <h2><%=param%></h2> 
     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem quaerat voluptates nam ducimus accusamus
       quasi quos corporis fugiat numquam laborum!</p>
   </div>
@@ -23,7 +24,7 @@
     <button type="submit" class="btn btn-success">Göster</button>
     <%}%>
     <%if (!firms.length){%>
-      <button type="button" class="btn btn-inactive">Göster</button>
+      <button disabled type="button" class="btn">Göster</button>
     <%}%>
     </form>
   
@@ -54,19 +55,19 @@
     <% for(let i = 0; i < localData.length; i++){ %>
     <tr class="table-secondary">
       <th scope="row"><%=i+1%></th>
-      <td><%=localData[i].departman%></td>
-      <td><%=localData[i].surec%></td>
-      <td><%=localData[i].veriKategorisi%></td>
-      <td><%=localData[i].kisiselVeri%></td>
-      <td><%=localData[i].ozelNitelikliKisiselVeri%></td>
-      <td><%=localData[i].islemeAmaclari%></td>
-      <td><%=localData[i].ilgiliKisi%></td>
-      <td><%=localData[i].hukukiSebebi%></td>
-      <td><%=localData[i].saklamaSuresi%></td>
-      <td><%=localData[i].aliciGruplari%></td>
-      <td><%=localData[i].yabanciUlkelereAktarilanVeriler%></td>
-      <td><%=localData[i].teknikTedbirler%></td>
-      <td><%=localData[i].idariTedbirler%></td>
+      <td><%=localData[i]["data"].departman%></td>
+      <td><%=localData[i]["data"].surec%></td>
+      <td><%=localData[i]["data"].veriKategorisi%></td>
+      <td><%=localData[i]["data"].kisiselVeri%></td>
+      <td><%=localData[i]["data"].ozelNitelikliKisiselVeri%></td>
+      <td><%=localData[i]["data"].islemeAmaclari%></td>
+      <td><%=localData[i]["data"].ilgiliKisi%></td>
+      <td><%=localData[i]["data"].hukukiSebebi%></td>
+      <td><%=localData[i]["data"].saklamaSuresi%></td>
+      <td><%=localData[i]["data"].aliciGruplari%></td>
+      <td><%=localData[i]["data"].yabanciUlkelereAktarilanVeriler%></td>
+      <td><%=localData[i]["data"].teknikTedbirler%></td>
+      <td><%=localData[i]["data"].idariTedbirler%></td>
     </tr>
     <%}%>
 
@@ -80,7 +81,7 @@
 
 <form action="/veri-envanteri/<%=param%>" method="post" class="veri-envanteri-buttons">
 <button class="btn btn-success">Kopyasını İndir</button>
-<button type="button" name="deleteRowButton"class="btn btn-inactive">Seçili Veriyi Sil</button>
+<button type="button" disabled  name="deleteRowButton"class="btn">Seçili Veriyi Sil</button>
 <button type="button" name="deleteFirmButton" class=" btn btn-danger" data-toggle="modal" data-target="#exampleModalCenter">Firmayı Sil</button>
 </form>
 

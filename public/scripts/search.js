@@ -31,7 +31,7 @@ function search2(object)
       a = li[i];
       txtValue = a.textContent || a.innerText;
 
-      if ((txtValue.toLocaleUpperCase('tr-TR').indexOf(filter) > -1) && (li[i].getElementsByTagName("i")[0].className === "fas fa-star") ){
+      if ((txtValue.toLocaleUpperCase('tr-TR').indexOf(filter) > -1) && (li[i].getElementsByTagName("i")[0].className === "far fa-star favori") ){
         li[i].style.display = "";
         p.innerHTML = "";
         button.style.display = "none";

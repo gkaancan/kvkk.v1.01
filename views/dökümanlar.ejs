@@ -1,11 +1,4 @@
-<% if (isAuthenticated){ %>
-    <%- include('auth_header'); -%>
-    <% } %>
-    
-    <% if (!isAuthenticated){ %>
-        <%- include('header'); -%>
-    <% } %>
-    
+<%- include('auth_header'); -%>
     <div class="jumbotron jumbotron-fluid">
         <div class="container">
           <h1>Dökümanlar</h1>
@@ -18,11 +11,16 @@
 
         <div class="card">
             <div class="card-header">
-              Dökümanlar
+              <span style="float: left;">Döküman Adı</span> <span style="float: right;">Güncellenme Tarihi</span>
             </div>
             <div class="card-body">
               <div class="docs">
-              <%-htmlString%>
+              <% for(let i = 0;i<filesArray.length;i++){ %>
+              <p>
+                <span class="fileName"><%= filesArray[i].filesName %></span>
+                <span class=fileDate><%= filesArray[i].filesDate%> </span>
+              </p>
+              <%}%>
               </div>
               <p id="messageElement"></p>
             </div>

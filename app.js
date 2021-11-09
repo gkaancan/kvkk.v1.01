@@ -8,6 +8,7 @@ const passportLocalMongoose = require("passport-local-mongoose");
 const findOrCreate = require('mongoose-findorcreate');
 const fs = require("fs");
 const internal = require("stream");
+const { stringify } = require("querystring");
 
 const app = express();
 app.use(express.static(__dirname + '/public'));
@@ -19,7 +20,7 @@ app.use(session({
   saveUninitialized: false
 }));
 
-const documentsPath = "public/Dökümanlar/";
+const documentsPath = "public/Dökümanlar/pdf";
 
 const options = {
   errorMessages: {
@@ -44,39 +45,63 @@ mongoose.connect("mongodb://localhost:27017/KVKK");
 
 
 const dataSchema = new mongoose.Schema({
-  departman:Array,
-  surec:Array,
-  veriKategorisi:Array,
-  kisiselVeri:Array,
-  ozelNitelikliKisiselVeri:Array,
-  islemeAmaclari:Array,
-  ilgiliKisi:Array,
-  hukukiSebebi:Array,
-  saklamaSuresi:Array,
-  aliciGruplari:Array,
-  yabanciUlkelereAktarilanVeriler:Array,
-  teknikTedbirler:Array,
-  idariTedbirler:Array
+  firm:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"Firm"
+  },
+    user:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"User"
+  },
+  data:{        
+  departman:[],
+  surec:[],
+  veriKategorisi:[],
+  kisiselVeri:[],
+  ozelNitelikliKisiselVeri:[],
+  islemeAmaclari:[],
+  ilgiliKisi:[],
+  hukukiSebebi:[],
+  saklamaSuresi:[],
+  aliciGruplari:[],
+  yabanciUlkelereAktarilanVeriler:[],
+  teknikTedbirler:[],
+  idariTedbirler:[]
+}
 });
 
 const firmSchema = new mongoose.Schema({
+  user:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"User"
+  },
   firmName:String,
-  data:Array
+  data:[{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"KvkkData"
+  }],
 });
 
 const userSchema = new mongoose.Schema({
   name:String,
   username:String,
+  firms:[{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"Firm"
+  }],
   password:String,
   secret:String
 });
+
 
 userSchema.plugin(passportLocalMongoose,options);
 userSchema.plugin(findOrCreate);
 
 const Firm = mongoose.model('firm',firmSchema);
 const KvkkData = mongoose.model('kvkkdata',dataSchema);
-const User = new mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
+const FavoriData = mongoose.model('favori',dataSchema);
+const ExtraData = mongoose.model('extra',dataSchema);
 
 passport.use(User.createStrategy());
 
@@ -92,46 +117,51 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
-var firmName = "";
+
 
 var message = ""; 
 
 
 
 app.get("/",function(req,res)
-{   message = "";
+{   
     if (req.isAuthenticated())
       res.render("home",{isAuthenticated:req.isAuthenticated(),name:req.user.name});
     else
-      res.render("home",{isAuthenticated:req.isAuthenticated()});   
+      res.render("home",{isAuthenticated:req.isAuthenticated()});
+    message = "";     
     
      
 });
 
-app.get("/veri-girisi",function(req,res)
-{
-  res.render("veri-girisi");
-});
-
 app.get("/veri-girisi-firm",function(req,res)
 {
-  message = "";
-  var firms = [];
-  Firm.find(function(error,data){
-    if (error)
-      console.log(error);
-    else
-    {
-      for (let i = 0; i<data.length; i++)
+  var localFirmNames =[];
+  if (req.isAuthenticated())
+  {
+     Firm.find({user:req.user._id}).select("firmName , -_id").exec(function(error,firms){
+       if(error)
+       {
+        message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 871318"; 
+        console.log(error);
+        res.render("veri-girisi-firm",{firms:localFirmNames,name:req.user.name,message:message});
+       }
+       else{ 
+      for(let i = 0 ; i < firms.length;i++)  
       {
-       
-        firms.push(data[i].firmName);
-        // console.log(firms);
-      }
-      res.render("veri-girisi-firm",{firms:firms});
-    }  
-});
-  
+        localFirmNames.push(firms[i]["firmName"]);
+      } 
+        
+        res.render("veri-girisi-firm",{firms:localFirmNames,name:req.user.name,message:message});
+        message = "";
+    }
+    });
+  }  
+else
+   {
+    message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+    res.redirect("/login");
+  }
 });
 
 app.post("/veri-girisi-firm",function(req,res){
@@ -139,111 +169,218 @@ app.post("/veri-girisi-firm",function(req,res){
   if(req.body.add)
     address = address + "-firm/add";
   if(req.body.contiune)
-    firmName = req.body.firms; 
+  {
+    address = address +"/"+req.body.firms; 
+  }
+    
   res.redirect(address);
 
 });
 
 app.get("/veri-girisi-firm/add",function(req,res)
 {
-  res.render("veri-girisi-add",{message:message})
+  if (req.isAuthenticated())
+    res.render("veri-girisi-add",{message:message,name:req.user.name});
+  else
+  {
+    message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+    res.redirect("/login");
+  }
+  message = "";  
 });
 
 app.post("/veri-girisi-firm/add",function(req,res){
-  
-  Firm.find(function(error,data){
-    if (error)
+
+  Firm.exists({user:req.user._id,firmName:capitalizeFirstLetter(req.body.newFirm)},function(error,data){
+    if (error){
+      message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 487951"; 
       console.log(error);
-    else 
-    {
-      let firms = [];
-      for (let i = 0; i<data.length; i++)
-      {
-        firms.push(data[i].firmName);
-      }
-      let text = capitalizeFirstLetter(req.body.newFirm);
-      if(!firms.includes(text))
+      res.render("veri-girisi-firm/add",{firms:localFirmNames,name:req.user.name,message:message});
+    }
+
+    if(data){
+      message = "'" + req.body.newFirm +"' zaten ekli !";
+      res.redirect("/veri-girisi-firm/add");
+    }
+
+    else{
+      const newFirm = new Firm({
+        user:req.user._id,
+        firmName:capitalizeFirstLetter(req.body.newFirm)
+      });
+      newFirm.save(function(error){
+        if(error)
         {
-          Firm.insertMany(new Firm({firmName:text},function(error){
-          if (error)
-            {console.log(error);}
-          else
-            {
-            console.log("successfuly inserted");}}));  
-            res.redirect("/veri-girisi-firm");
-            }
-      else
-        {
-          message = "'" + req.body.newFirm +"' zaten ekli !";
-          res.redirect("/veri-girisi-firm/add");
+         message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 871318"; 
+         console.log(error);
+         res.render("veri-girisi-firm/add",{firms:localFirmNames,name:req.user.name,message:message});
         }
-    }  
+        else{
+         message ="Firma başarıyla eklendi";
+         res.redirect("/veri-girisi-firm");
+        }
+      });
+    }
   });
 
+  
+
+
+
+  // User.findById(req.user._id,function(error,user){
+  //   if(error)
+  //     {
+  //       console.log(error);
+  //       message = "Bir hata meydana geldi. Lütfen tekrar deneyin (Hata Kodu:152)";
+  //       res.redirect("/veri-girisi-firm");
+  //     }
+  //     else
+  //     {
+  //     user.firms.push(newFirm);
+  //     user.save();
+  //     message ="Firma başarıyla eklendi";
+  //     res.redirect("/veri-girisi-firm")
+  //     }  
+  // });
+
+
+  // User.find({username:req.user.username},function(err,data){
+  //   if(err)
+  //   {
+  //     console.log(err);
+  //     message = "Bir hata meydana geldi. Lütfen tekrar deneyin (Hata Kodu:152)";
+  //     res.redirect("/veri-girisi-firm");
+  //   }
+  //   //kullanıcıyı bulduk
+  //   else
+  //   {
+  //     var localFirmNames = [];
+  //     for (let i=0;i<data[0].firms.length;i++)
+  //     {
+  //       // aynı isimde firma var mı bi bakıyoruz
+  //       localFirmNames.push(data[0].firms[i].firmName);
+  //     }
+  //     if (!localFirmNames.includes(capitalizeFirstLetter(req.body.newFirm)))
+  //     {
+  //       // buraya kadar geldiyse aynı isimde firma yokmuş demektir. firmayı datasız yaratıyoruz    
+  //       const newFirm = new Firm({
+  //         firmName:capitalizeFirstLetter(req.body.newFirm)
+  //       });  
+  //       newFirm.save(); // neden kaydediyoz hiç bir fikrim yok
+
+  //       //firmayı userın içine ekliyoruz
+  //       User.findOneAndUpdate({username:req.user.username},{$push:{firms:newFirm}},function(error,result){
+  //         if(error)
+  //         {
+  //           console.log(error);
+  //           message = "Bir hata meydana geldi. Lütfen tekrar deneyin (Hata Kodu:151)";
+  //           res.redirect("/veri-girisi-firm/add");
+  //         }
+  //         else
+  //         {
+  //           console.log(result);
+  //           message ="Firma başarıyla eklendi";
+  //           res.redirect("/veri-girisi-firm")
+  //         }
+  //       });
+  //     }
+  //     else{
+  //       message = "'" + req.body.newFirm +"' zaten ekli !";
+  //       res.redirect("/veri-girisi-firm/add");
+  //     }
+  // }
+  // });
   
 });
 
-app.post("/veri-girisi",function(req,res){
-  const localData = new KvkkData(req.body);
-  
+app.get("/veri-girisi/:arg",function(req,res)
+{
+  if(req.isAuthenticated)
+   {
+    res.render("veri-girisi",{name:req.user.name});
+  }
+  else
+   {
+     message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+    res.redirect("/login");
+   }  
+});
 
-  var dataArray = [localData];
+app.post("/veri-girisi/:arg",function(req,res){
   
-
-  Firm.find({firmName:firmName},function(error,data)
-  {
-    if (error)
-      console.log(error);
-    else
+  Firm.find({firmName:req.params.arg , user:req.user._id},function(error,firma){
+      if(error)
+      {
+        message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 541834"; 
+        console.log(error);
+        res.render("veri-girisi",{name:req.user.name});
+      }
+      else
       {
         
-        for (let i = 0;i<data[0].data.length;i++)
-          {
-            dataArray.push(data[0].data[i]);
-            // console.log("dataArray: ",dataArray);
-            // console.log("eklenecek data: ",data[0].data[i]);
-            // dataArray.push(data[0].data[i]);
-            // console.log("eklenmiş data: ",dataArray);
-          }
-            console.log("succesfuly finded");
-      }
+        const localData = new KvkkData({
+          user:req.user._id,
+          firm:firma._id,
+          data:req.body.veriler[0]
+              });
+        localData.save();
 
-  });
-
-   Firm.updateOne({firmName:firmName},{$addToSet:{data:dataArray}},function(error)
-          {
-            if (error)
-              console.log(error);
-            else
-               console.log("successfully updated");  
-          });
-
-  res.redirect("/");        
-  
         
+
+        const localFavorities = new FavoriData({
+          user:req.user._id,
+          firm:firma._id,
+          data:req.body.veriler[1]
+        });
+        localFavorities.save();
+
+        const localExtras = new ExtraData({
+          user:req.user._id,
+          firm:firma._id,
+          data:req.body.veriler[2]
+        });
+        localExtras.save();
+      }
+  });
+ res.redirect("/");        
 });
 
 app.get("/veri-girisi-son",function(req,res){
-  res.render("veri-girisi-son");
+  if (req.isAuthenticated())
+    res.render("veri-girisi-son",{name:req.user.name});
+  else
+  {
+    message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+    res.redirect("/login");
+  }    
 })
  
 app.get("/veri-envanteri",function(req,res){
-  Firm.find(function(error,data){
-    if (error)
-      console.log(error);
-    else
-    {
-      let firms = [];
-      for (let i = 0; i<data.length; i++)
-      {
-        
-        firms.push(data[i].firmName);
-        // console.log(firms);
-      }
-      res.render("veri-envanteri",{firms:firms,message:message});
-    }  
   
-});
+  if(req.isAuthenticated())
+  {
+    Firm.find({user:req.user._id},function(err,data){
+      if (err)
+      {
+        console.log(err);
+        message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 186331";
+        res.redirect("/");
+      }
+      else
+      {
+        var localFirmNames = [];
+        for (let i = 0; i < data.length; i++)
+        {
+          localFirmNames.push(data[i].firmName);
+        }
+        res.render("veri-envanteri",{firms:localFirmNames,message:message,name:req.user.name});
+      }
+    })
+  }  
+  else{
+    message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+    res.redirect("/login");
+  }
 });
 
 app.post("/veri-envanteri",function(req,res){
@@ -254,131 +391,176 @@ app.post("/veri-envanteri",function(req,res){
 
 app.get("/veri-envanteri/:arg",function(req,res)
 {
-  let param = req.params.arg;
- 
-  Firm.find({firmName:param},function(error,veri){
-    if(error)
-      console.log("error");
-    else
+  if (req.isAuthenticated())
+  {
+    var firmNames = [];
+    Firm.find({user:req.user._id},function(error,data){
+      if (error)
       {
-        Firm.find(function(error,data){
+        console.log(err);
+        message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 475452";
+        res.redirect("/");
+      }
+      else
+      {
+        for (let i = 0 ; i < data.length; i ++)
+          firmNames.push(data[i].firmName);
+      }
+    });
+    Firm.find({user:req.user._id,firmName:req.params.arg},function(error,data){
+      if (error)
+      {
+        console.log(err);
+        message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 178312";
+        res.redirect("/");
+      }
+      else
+      {
+        KvkkData.find({user:req.user._id,firm:data._id},'data -_id',function(error,kvkk){
           if (error)
-            console.log(error);
+          {
+            console.log(err);
+            message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 797418";
+            res.redirect("/");
+          }
           else
           {
-            let firms = [];
-            for (let i = 0; i<data.length; i++)
-            {
-              
-              firms.push(data[i].firmName);
-              // console.log(firms);
-            }
-            res.render("veri-envanteri-datalarla",{firms:firms,param:param,localData:veri[0].data,message:message});
-          }  
-        
-      });
-      }  
-  })
-  
-  
+            console.log(kvkk["data"]);
+            res.render("veri-envanteri-datalarla",{firms:firmNames,param:req.params.arg,localData:kvkk,message:message,name:req.user.name});
+          }
+        })
+      }
+    })
+   
+  }
+
   
 });
 
+//burada iş var, silme işini objenin id si ile yapabiliriz ama nasıl, 
 app.post("/veri-envanteri/:arg",function(req,res){
-  message = "";
   if(req.body.choosefirm)
     res.redirect("/veri-envanteri/"+req.body.choosefirm);
   if(req.body.deleteRowButton)
     {
-      let id;
-      let localData = [];
-      Firm.find({firmName:req.params.arg},function(error,data){
-        if(error)
-          console.log("error")
+      var  id = req.body.deleteRowButton-1;
+      var localData = [];
+      Firm.find({user:req.user._id,firmName:req.params.arg},function(error,firma){
+        if (error)
+        {
+          console.log(error);
+          message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 186331";
+          res.redirect("/veri-envanteri");
+        }
         else
-          {
-            id = req.body.deleteRowButton-1;
-            localData.push(data[0].data[id]);
-            // KvkkData.deleteOne({_id:data[0].data[id]._id},function(error){
-            //    if (error)
-            //      console.log(error);
-            //    else
-            //      ("silindi");  
-            //  });
-            Firm.updateOne({firmName:req.params.arg},{$pullAll:{data:localData}},function(error)
-          {
+        {
+          KvkkData.findOneAndRemove({user:req.user._id,firm:firma._id},{},function(error,doc){
             if (error)
             {
               console.log(error);
-              message = "Veri silinirken bir sorunla karşılaştık. Lütfen tekrar deneyin";
-            }  
+              message = "Veri silinirken bir hata meydana geldi. Bu hatayı lütfen bize bildirin.";
+              res.redirect("/veri-envanteri/"+req.params.arg); 
+            }
             else
             {
-               console.log("successfully updated");
-               message = "Seçtiğiniz veri başarıyla silindi.";
-            }     
-          });
-            
-            res.redirect("/veri-envanteri/"+req.params.arg); 
-          }  
+              console.log(doc);
+              message = "Seçtiğiniz veri başarıyla silindi";
+              res.redirect("/veri-envanteri/"+req.params.arg);
+            }
+          })
+        }
       });
-    }
+    }  
+      //   Firm.find({firmName:req.params.arg},function(error,data){
+      //     if(error)
+      //       console.log(error)
+      //     else
+      //       {
+            
+      //         localData.push(data[0].data[id]);
+      //         // KvkkData.deleteOne({_id:data[0].data[id]._id},function(error){
+      //         //    if (error)
+      //         //      console.log(error);
+      //         //    else
+      //         //      ("silindi");  
+      //         //  });
+      //         Firm.updateOne({firmName:req.params.arg},{$pullAll:{data:localData}},function(error)
+      //       {
+      //         if (error)
+      //         {
+      //           console.log(error);
+      //           message = "Veri silinirken bir sorunla karşılaştık. Lütfen tekrar deneyin";
+      //         }  
+      //         else
+      //         {
+      //            console.log("successfully updated");
+      //            message = "Seçtiğiniz veri başarıyla silindi.";
+      //         }     
+      //       });
+              
+      //         res.redirect("/veri-envanteri/"+req.params.arg); 
+      //       }  
+      //   });
+      // }
 
-    if(req.body.deleteFirm)
-    {
-      Firm.deleteOne({firmName:req.params.arg},function(error)
+      if(req.body.deleteFirm)
       {
-        if (error)
+        Firm.deleteOne({firmName:req.params.arg},function(error)
         {
-          console.log("an error was occured when the firm is deleted");
-          message = "Bir hata oluştu lütfen tekrar deneyin."
-        }
-        else
-        {
-          console.log("firm was deleted succesfuly");
-          message = "Seçtiğiniz firma başarı ile silindi."
-          res.redirect("/veri-envanteri");
-        }
-      })
-      
-    }
+          if (error)
+          {
+            console.log("an error was occured when the firm is deleted");
+            message = "Bir hata oluştu lütfen tekrar deneyin."
+          }
+          else
+          {
+            console.log("firm was deleted succesfuly");
+            message = "Seçtiğiniz firma başarı ile silindi."
+            res.redirect("/veri-envanteri");
+          }
+        })
+      }
 });
 
 app.get("/login",function(req,res){
   res.render("login",{message:message});
+  message = "";
 });
 
 app.post("/login",function(req,res){
-  const user = new User({
-    username:req.body.login_input,
-    password:req.body.login_password
-  });
   
-   req.login(user,function(error){
-     console.log(user);
-     if (error)
-     {
-       console.log(error);
-       res.redirect("/login");
-     }
-     else
-     {
-       message = "";
-       // ,{failureRedirect: '/login'}
-       passport.authenticate("local")(req, res, function(){
-         res.redirect("/");
-       });
-     }
-   })
-
+  const tempUser = new User({
+    username:req.body.username,
+    password:req.body.password
+  });
+  req.login(tempUser,function(error)
+  {
+    if (error)
+      {
+        console.log(error);
+        res.redirect("/login");
+      }
+    else
+      {
+        message = "Kullanıcı adı veya şifre hatalı"; 
+        // ,{failureRedirect: '/login'}
+          passport.authenticate("local",{failureRedirect: '/login'})(req, res, function(){
+           
+          res.redirect("/");
+        });
+      }
+  
+      
+  });
 });
 
 app.get("/register",function(req,res){
   res.render("register",{message,message});
+  message = "";
 });
 
 app.post("/register", function(req, res){
-    console.log(req.body.password.match(/[a-z]/g));
+    
     if(req.body.password !== req.body.re_password)
     {
       message = "Girdiğiniz şifre, tekrarı ile uyuşmuyor.";
@@ -418,8 +600,11 @@ app.get("/logout",function(req,res){
 
 app.get("/documents",function(req,res){
   message = "";
-  if (req.isAuthenticated())
-    res.render("dökümanlar",{isAuthenticated:req.isAuthenticated(),name:req.user.name});
+  if (!req.isAuthenticated())
+    {
+    message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+    res.redirect("/login");
+    }
   else
   {
     fs.readdir(documentsPath, (err, files) => {
@@ -427,13 +612,13 @@ app.get("/documents",function(req,res){
         console.log(err);
       else
       { 
-        var htmlString = "";
+        var filesArray = [];
         for(let i = 0; i <files.length;i++)
         {
-          htmlString = htmlString +"<p>"+files[i]+"</p>";
+          filesArray.push({filesName:files[i].slice(11,-4),
+                          filesDate:files[i].slice(0,10)});
         }
-
-        res.render("dökümanlar",{isAuthenticated:req.isAuthenticated(),htmlString:htmlString});
+        res.render("dökümanlar",{filesArray:filesArray,name:req.user.name});
       }  
 
     });
@@ -445,19 +630,23 @@ app.get("/documents",function(req,res){
 app.post("/documents",function(req,res){
   res.redirect("/");
 });
+
 app.get("/documents/:arg",function(req,res){
-  fs.readFile(documentsPath+"/"+req.params.arg,function(error,data){
-    if (error)
-      {
-        console.log(error);
+  if (req.isAuthenticated())
+  {
+  const path = req.params.arg+".pdf";
+  const pdfString = "<object data='/Dökümanlar/pdf/" +path+"' type='application/pdf' width='100%' height='100%'></object>";
+  const buttonString = " <button type='button' id='downloadPdf' class='btn btn-outline-danger'onclick='downloadDocument("+'"'+path+'"' +","+'"'+'pdf'+'"'+")'>PDF Belgesi Olarak İndir</button> "+
+                        "<button type='button' class='btn btn-outline-primary' id='downloadWord'onclick='downloadDocument("+'"'+path+'"' +","+'"'+'word'+'"'+")'>Word Belgesi Olarak İndir</button>"
+  res.render("döküman",{document:req.params.arg,pdfString:pdfString,buttonString:buttonString,name:req.user.name});
+  }
+  else
+  {
+    {
+      message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+      res.redirect("/login");
       }
-    else
-      {
-        res.render("döküman",{document:req.params.arg,data:data});
-      }  
-  });
-  
-  
+  }
 });
 
 
@@ -497,19 +686,70 @@ let str2 = arr.join(" ");
 return str2;
 }
 
-// fs.readdir(documentsPath, (err, files) => {
-//   if(err)
-//     console.log(err);
-//   else
-//   { 
-//     var htmlString = "<div id='page-1' class='document-active'>"
-//     for(let i = 0; i <files.length;i++)
-//     {
-//       htmlString = htmlString +"<p>"+files[i]+"</p>";
-//       if (i%10 === 0 && i!== 0)
-//       {
-//         let x = Number(i/10) + Number(1);
-//         htmlString = htmlString + "</div>" + "<div id='page-"+x+"' class='document-deactive'>";
-//       }
-//     }
-//     htmlString = htmlString + "</div>";
+
+
+async function createData(data,firmId)
+{
+  const newData = new KvkkData({
+    firm:firmId,
+    data:data
+  });
+  data.save();
+
+  await Firm.findById(firmId,function(error,firma){
+    if (error)
+      {console.log(error)}
+    else
+    {
+      firma.data.push(newData);
+      firma.data.save();
+    }  
+  })
+}
+
+async function createFirm(firmName,userId)
+{
+  const newFirm = new Firm({
+    user:userId,
+    firmName:firmName
+  });
+  newFirm.save();
+
+  await User.findById(userId,function(error,user){
+    if(error)
+    user.firm.push(newFirm);
+    user.save();
+    
+  });
+
+
+};
+
+async function updateFavorities(favorities,firmId)
+{
+  await Firm.findOneAndUpdate({_id:firmId},{favorities:favorities});
+};
+
+async function updateExtraData(extraData,firmId)
+{
+  const newData = new KvkkData(
+    {
+     firm:firmId,
+     Data:extraData
+    }
+  )
+  newData.save();
+
+  await Firm.findOneAndUpdate({_id:firmId},{extraData:extraData});
+};
+
+async function getData(firmId)
+{
+  return await Firm.findById(firmId).
+                                  populate("data");
+};
+
+async function getFirmNames(userId)
+{
+  return await User.findById(userId).populate("firms","firmName");
+};
