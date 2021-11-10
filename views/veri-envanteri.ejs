@@ -20,7 +20,9 @@
 <button type="submit" class="btn btn-success">Göster</button>
 <%}%>
 <%if (!firms.length){%>
-  <button type="button" class="btn btn-inactive">Göster</button>
+  <p style="color: darkred;">Devam edebilmek için bir firma adına veri girin!</p>
+  <button disabled type="button" class="btn">Göster</button>
+ 
 <%}%>
 </form>
               

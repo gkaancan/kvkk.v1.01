@@ -297,7 +297,8 @@ app.get("/veri-girisi/:arg",function(req,res)
 {
   if(req.isAuthenticated)
    {
-    res.render("veri-girisi",{name:req.user.name});
+    res.render("veri-girisi",{name:req.user.name,message:message});
+    message = "";
   }
   else
    {
@@ -317,7 +318,8 @@ app.post("/veri-girisi/:arg",function(req,res){
       }
       else
       {
-        
+        try
+        {
         const localData = new KvkkData({
           user:req.user._id,
           firm:firma._id,
@@ -325,7 +327,7 @@ app.post("/veri-girisi/:arg",function(req,res){
               });
         localData.save();
 
-        
+        FavoriData.deleteOne({firm:firma._id}).exec();      
 
         const localFavorities = new FavoriData({
           user:req.user._id,
@@ -334,20 +336,28 @@ app.post("/veri-girisi/:arg",function(req,res){
         });
         localFavorities.save();
 
+        ExtraData.deleteOne({firm:firma._id}).exec()
         const localExtras = new ExtraData({
           user:req.user._id,
           firm:firma._id,
           data:req.body.veriler[2]
         });
         localExtras.save();
+        message= "Verileriniz başarıyla veri envanterinize kaydedildi.";
       }
+    
+    catch{
+      message = "Veriler kaydedilemedi,muhtemelen boş bir veri seti girmeye çalıştırız. Aksi bir durum için lütfen bizi bilgilendirin";
+    }
+  }
+      
   });
  res.redirect("/");        
 });
 
 app.get("/veri-girisi-son",function(req,res){
   if (req.isAuthenticated())
-    res.render("veri-girisi-son",{name:req.user.name});
+    res.render("veri-girisi-son",{name:req.user.name,message:message});
   else
   {
     message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
@@ -413,6 +423,7 @@ app.get("/veri-envanteri/:arg",function(req,res)
         console.log(err);
         message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 178312";
         res.redirect("/");
+        
       }
       else
       {
@@ -427,6 +438,7 @@ app.get("/veri-envanteri/:arg",function(req,res)
           {
             console.log(kvkk["data"]);
             res.render("veri-envanteri-datalarla",{firms:firmNames,param:req.params.arg,localData:kvkk,message:message,name:req.user.name});
+            message = "";
           }
         })
       }
@@ -437,89 +449,74 @@ app.get("/veri-envanteri/:arg",function(req,res)
   
 });
 
-//burada iş var, silme işini objenin id si ile yapabiliriz ama nasıl, 
+ 
 app.post("/veri-envanteri/:arg",function(req,res){
-  if(req.body.choosefirm)
-    res.redirect("/veri-envanteri/"+req.body.choosefirm);
-  if(req.body.deleteRowButton)
-    {
-      var  id = req.body.deleteRowButton-1;
-      var localData = [];
-      Firm.find({user:req.user._id,firmName:req.params.arg},function(error,firma){
-        if (error)
-        {
-          console.log(error);
-          message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 186331";
-          res.redirect("/veri-envanteri");
-        }
-        else
-        {
-          KvkkData.findOneAndRemove({user:req.user._id,firm:firma._id},{},function(error,doc){
-            if (error)
-            {
-              console.log(error);
-              message = "Veri silinirken bir hata meydana geldi. Bu hatayı lütfen bize bildirin.";
-              res.redirect("/veri-envanteri/"+req.params.arg); 
-            }
-            else
-            {
-              console.log(doc);
-              message = "Seçtiğiniz veri başarıyla silindi";
-              res.redirect("/veri-envanteri/"+req.params.arg);
-            }
-          })
-        }
-      });
-    }  
-      //   Firm.find({firmName:req.params.arg},function(error,data){
-      //     if(error)
-      //       console.log(error)
-      //     else
-      //       {
+  
+ if(req.body.choosefirm)
+   res.redirect("/veri-envanteri/"+req.body.choosefirm);
+ if(req.body.deleteRowButton)
+   {
+     var  id = req.body.deleteRowButton-1;
+     Firm.find({user:req.user._id,firmName:req.params.arg},function(error,firma){
+       if (error)
+       {
+          
+         console.log(error);
+         message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 186331";
+         res.redirect("/veri-envanteri"+req.params.arg);
+       }
+       else
+       {
+        
+         KvkkData.find({firm:firma._id},function(error,data){
+           if (error)
+           {
+             console.log(error);
+             message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 929431";
+             res.redirect("/veri-envanteri"+req.params.arg);
+           }
+           else
+           {
             
-      //         localData.push(data[0].data[id]);
-      //         // KvkkData.deleteOne({_id:data[0].data[id]._id},function(error){
-      //         //    if (error)
-      //         //      console.log(error);
-      //         //    else
-      //         //      ("silindi");  
-      //         //  });
-      //         Firm.updateOne({firmName:req.params.arg},{$pullAll:{data:localData}},function(error)
-      //       {
-      //         if (error)
-      //         {
-      //           console.log(error);
-      //           message = "Veri silinirken bir sorunla karşılaştık. Lütfen tekrar deneyin";
-      //         }  
-      //         else
-      //         {
-      //            console.log("successfully updated");
-      //            message = "Seçtiğiniz veri başarıyla silindi.";
-      //         }     
-      //       });
-              
-      //         res.redirect("/veri-envanteri/"+req.params.arg); 
-      //       }  
-      //   });
-      // }
+             KvkkData.deleteOne({_id:data[id]._id},function(error,result){
+               if (error)
+                 {
+                   console.log(error);
+                   message = "Veri silinirken bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 741372";
+                   res.redirect("/veri-envanteri"+req.params.arg);
+                 }
+               else
+                 {
+                   message="Veri başarıyla silindi";
+                   res.redirect("/veri-envanteri/"+req.params.arg);
+                 }  
+               });
+           }
+         });
+       }
+     });
+   }  
 
-      if(req.body.deleteFirm)
-      {
-        Firm.deleteOne({firmName:req.params.arg},function(error)
-        {
-          if (error)
-          {
-            console.log("an error was occured when the firm is deleted");
-            message = "Bir hata oluştu lütfen tekrar deneyin."
-          }
-          else
-          {
-            console.log("firm was deleted succesfuly");
-            message = "Seçtiğiniz firma başarı ile silindi."
-            res.redirect("/veri-envanteri");
-          }
-        })
-      }
+ if(req.body.deleteFirm)
+ {
+   Firm.find({user:req.user._id,firmName:req.params.arg},function(error,firma){
+     if(error)
+     {
+      console.log(error);
+      message = "Firma silinirken bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 143159";
+      res.redirect("/veri-envanteri");
+     }
+     else
+     {
+      KvkkData.deleteMany({firm:firma._id}).exec();
+      FavoriData.deleteMany({firm:firma._id}).exec();
+      ExtraData.deleteMany({firm:firma._id}).exec();
+      Firm.deleteOne({user:req.user._id,firmName:req.params.arg}).exec();
+      message = "Firma başarıyla silindi";
+      res.redirect("/veri-envanteri");
+     }
+   });
+ }
 });
 
 app.get("/login",function(req,res){
@@ -688,68 +685,68 @@ return str2;
 
 
 
-async function createData(data,firmId)
-{
-  const newData = new KvkkData({
-    firm:firmId,
-    data:data
-  });
-  data.save();
+// async function createData(data,firmId)
+// {
+//   const newData = new KvkkData({
+//     firm:firmId,
+//     data:data
+//   });
+//   data.save();
 
-  await Firm.findById(firmId,function(error,firma){
-    if (error)
-      {console.log(error)}
-    else
-    {
-      firma.data.push(newData);
-      firma.data.save();
-    }  
-  })
-}
+//   await Firm.findById(firmId,function(error,firma){
+//     if (error)
+//       {console.log(error)}
+//     else
+//     {
+//       firma.data.push(newData);
+//       firma.data.save();
+//     }  
+//   })
+// }
 
-async function createFirm(firmName,userId)
-{
-  const newFirm = new Firm({
-    user:userId,
-    firmName:firmName
-  });
-  newFirm.save();
+// async function createFirm(firmName,userId)
+// {
+//   const newFirm = new Firm({
+//     user:userId,
+//     firmName:firmName
+//   });
+//   newFirm.save();
 
-  await User.findById(userId,function(error,user){
-    if(error)
-    user.firm.push(newFirm);
-    user.save();
+//   await User.findById(userId,function(error,user){
+//     if(error)
+//     user.firm.push(newFirm);
+//     user.save();
     
-  });
+//   });
 
 
-};
+// };
 
-async function updateFavorities(favorities,firmId)
-{
-  await Firm.findOneAndUpdate({_id:firmId},{favorities:favorities});
-};
+// async function updateFavorities(favorities,firmId)
+// {
+//   await Firm.findOneAndUpdate({_id:firmId},{favorities:favorities});
+// };
 
-async function updateExtraData(extraData,firmId)
-{
-  const newData = new KvkkData(
-    {
-     firm:firmId,
-     Data:extraData
-    }
-  )
-  newData.save();
+// async function updateExtraData(extraData,firmId)
+// {
+//   const newData = new KvkkData(
+//     {
+//      firm:firmId,
+//      Data:extraData
+//     }
+//   )
+//   newData.save();
 
-  await Firm.findOneAndUpdate({_id:firmId},{extraData:extraData});
-};
+//   await Firm.findOneAndUpdate({_id:firmId},{extraData:extraData});
+// };
 
-async function getData(firmId)
-{
-  return await Firm.findById(firmId).
-                                  populate("data");
-};
+// async function getData(firmId)
+// {
+//   return await Firm.findById(firmId).
+//                                   populate("data");
+// };
 
-async function getFirmNames(userId)
-{
-  return await User.findById(userId).populate("firms","firmName");
-};
+// async function getFirmNames(userId)
+// {
+//   return await User.findById(userId).populate("firms","firmName");
+// };

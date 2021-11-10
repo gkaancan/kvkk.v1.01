@@ -55,15 +55,15 @@ function backToInputs(object) {
     object.parentNode.parentNode.parentNode.getElementsByTagName("input")[0].value = "";
     search2(object.parentNode.parentNode.parentNode.getElementsByTagName("input")[0]);
 };
-// tıklanan li nin arkaplan rengini değiştirme
+//data inputta tıklanan li nin aktif & deaktif olması
 $(".input-panel ul").on("click", "li", function () {
 
     if (!isOnStar) {
-        if (this.style.background == "") {
-            this.style.background = liBackgroundOnClick;
+        if ($(this).attr("class") !== "chosen") {
+            this.className = "chosen";
         }
         else {
-            this.style.background = "";
+            this.className = "";
         }
     }
 });
@@ -214,7 +214,7 @@ fieldNames.forEach(field => {
     
     for (var i = 0; i < document.getElementsByName(field)[0].getElementsByTagName("li").length; i++) {
         var liElement = document.getElementsByName(field)[0].getElementsByTagName("li")[i];
-        if (liElement.style.background === liBackgroundOnClick) 
+        if (liElement.className === "chosen") 
             veri[field].push(liElement.innerText);
         if (liElement.getElementsByTagName("i")[0].classList.contains("favori"))
             favorities[field].push(liElement.innerText);
@@ -496,10 +496,38 @@ function removeItemOnce(arr, value) {
     return arr;
 }
 
-//veri envanteri veriyi silme butonuna tıklandığında aktifleşen buton
-function deleteRow(){
+// veri seçilinde aktif / seçili değilken inaktif olan buton
+$(".carousel-inner").mouseout("li", function(){
+    if ($(".chosen").length)
+        document.getElementById("saveDataButton").disabled = false;
+    else
+        document.getElementById("saveDataButton").disabled = true;
+
+});
+
+//sadece tek bir departman seçilmesi
+$("#departmann").on("click","li",function(){
+    var elements = document.getElementById("departmann").getElementsByTagName("li");// $("#departmann li");
+    if($("#departmann .chosen").length >= 2 )
+    {
+        $("#departmann .chosen").removeClass("chosen");
+        this.className = "chosen";
+    }
+    for (let i = 0 ; i < elements.length; i++)
+    {
+
+        if (elements[i].className !== "chosen")
+            elements[i].classList.add("disabledLi")
+        else
+            elements[i].classList.remove("disabledLi")      
+    }
+
+});
+
     
-}
+
+
+
 
 
 //dökümanlar --  numaralara tıklandığında sayfalar arası geçiş -- iptal ettim
