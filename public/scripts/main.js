@@ -17,7 +17,7 @@ const serverUrl = "http://localhost:3000/";
 
 
 //ekle butonuna basılan elemanin li olarak listeye eklenmesi
-function addItem(object) {
+function addItem(object,favori) {
     var text = object.parentNode.parentNode.parentNode.getElementsByTagName("input")[0].value.toLowerCase();
 
     const arr = text.split(" ");
@@ -32,24 +32,30 @@ function addItem(object) {
 
     var liElement = document.createElement("li");
     liElement.innerHTML = text;
-    liElement.className = "added";
+    liElement.className = "added chosen";
 
     var iElement = document.createElement("i");
     iElement.className = "far fa-trash-alt";
 
     var iElement2 = document.createElement("i");
-    iElement2.className = "far fa-star";
+    if (!favori)
+        iElement2.className = "far fa-star";
+    else
+        iElement2.className = "far fa-star favori";
     var spanElement = document.createElement("span");
     spanElement.appendChild(iElement2);
     spanElement.appendChild(iElement);
     liElement.appendChild(spanElement);
     ul.appendChild(liElement);
-    liElement.style.background = liBackgroundOnClick;
     object.parentNode.parentNode.parentNode.getElementsByTagName("input")[0].value = "";
     search2(object.parentNode.parentNode.parentNode.getElementsByTagName("input")[0]);
 
 
 };
+function addFavorite(object)
+{
+
+}
 // geri dön butonuna basıldığında searchbarda yazılanı silme
 function backToInputs(object) {
     object.parentNode.parentNode.parentNode.getElementsByTagName("input")[0].value = "";
@@ -79,7 +85,6 @@ $(".input-panel ul").on("mouseenter", "li", function () {
 // yıldızın imleç li üzerinden ayrılınca gözükmemesi
 $(".input-panel ul").on("mouseleave", "li", function () {
     try {
-
         if (this.getElementsByTagName("i")[0].className !== "far fa-star favori")
             this.getElementsByClassName("far fa-star")[0].style.display = "none";
     } catch (error) {
@@ -105,23 +110,25 @@ $(".input-panel ul").on("mouseleave", "li span i", function () {
     isOnStar = false;
 });
 
-//input bardaki yıldız
-$(".search-star").click(function () {
-    if (this.className === "far fa-star search-star") {
-        this.className = "fas fa-star search-star";
-        this.style.color = starColor;
-    }
-    else {
-        this.className = "far fa-star search-star"
-        this.style.color = "";
-    }
-});
+// /input bardaki yıldız
+// $(".search-star").click(function () {
+//     if (this.className === "far fa-star search-star") {
+//         this.className = "fas fa-star search-star";
+//         this.style.color = starColor;
+//     }
+//     else {
+//         this.className = "far fa-star search-star"
+//         this.style.color = "";
+//     }
+// });
 
 // çöpün üzerine fareyle gelindiğinde hover efekti 
 $(".input-panel ul").on("mouseenter", "li span .fa-trash-alt", function () {
     this.parentNode.parentNode.style.border = "#c2362c 2px solid";
+    $(this).parent().parent().css("text-decoration","line-through");
 });
 $(".input-panel ul").on("mouseleave", "li span .fa-trash-alt", function () {
+    $(this).parent().parent().css("text-decoration","");
     this.parentNode.parentNode.style.border = '';
 });
 
@@ -193,7 +200,7 @@ const fieldNames = ["departman","surec","veriKategorisi","kisiselVeri","ozelNite
         yabanciUlkelereAktarilanVeriler: [],
         teknikTedbirler: [],
         idariTedbirler: []
-    };
+    } || [];
     var added = {
         departman: [],
         surec: [],
@@ -208,37 +215,55 @@ const fieldNames = ["departman","surec","veriKategorisi","kisiselVeri","ozelNite
         yabanciUlkelereAktarilanVeriler: [],
         teknikTedbirler: [],
         idariTedbirler: []
-    };
+    } ;
+
+    
 
 fieldNames.forEach(field => {
     
     for (var i = 0; i < document.getElementsByName(field)[0].getElementsByTagName("li").length; i++) {
         var liElement = document.getElementsByName(field)[0].getElementsByTagName("li")[i];
         if (liElement.className === "chosen") 
-            veri[field].push(liElement.innerText);
-        if (liElement.getElementsByTagName("i")[0].classList.contains("favori"))
-            favorities[field].push(liElement.innerText);
-        if (liElement.classList.contains("added"))
-            added[field].push(liElement.innerText);        
+            veri[field].push(liElement.innerText);    
+        if (field !== "yabanciUlkelereAktarilanVeriler" && liElement.getElementsByTagName("i")[0].classList.contains("favori"))
+        {
+            if (liElement.innerText[0] === " ")
+                favorities[field].push(liElement.innerText.replace(" ",""));
+            else
+                favorities[field].push(liElement.innerText)    
+
+        }
+            
+        if (field !== "yabanciUlkelereAktarilanVeriler" && liElement.classList.contains("added"))
+        {
+            if (liElement.innerText[0] === " ")
+                added[field].push(liElement.innerText.replace(" ",""));
+            else
+                added[field].push(liElement.innerText);    
+
+        }
     }
 });
 
 
 
-    $.ajax({
-        //url: serverUrl + "veri-girisi",
-        type: "POST",
-        data: {veriler:[veri,favorities,added]},
-        success: function (msg, status) {
-            console.log("success");
-            console.log(status);
-            window.location.replace("/veri-girisi-son");
-        },
-        error: function (jqXHR, status, err) {
-            alert("Veriler işlenirken bir sorunla karşılaşıldı.");
-            console.log(status);
-            console.log(err);
-        }});
+
+var temp = {veri:veri,favori:favorities,added:added};
+
+$.ajax({
+    //url: serverUrl + "veri-girisi",
+    type: "POST",
+    data: {veriler:temp},
+    success: function (msg, status) {
+        console.log("success");
+        console.log(status);
+        window.location.replace("/veri-girisi-son");
+    },
+    error: function (jqXHR, status, err) {
+        alert("Veriler işlenirken bir sorunla karşılaşıldı.");
+        console.log(status);
+        console.log(err);
+    }});
 }
 
 
@@ -317,10 +342,6 @@ function validate() {
 }
 
 //uygun şifre girilip girilmediğini kontrol eden kısım
-
-
-
-
 
 $("#password").on("focus", function () {
     $(".warningMessages").show(100);
@@ -522,8 +543,205 @@ $("#departmann").on("click","li",function(){
             elements[i].classList.remove("disabledLi")      
     }
 
+    if($("#departmann .chosen").length == 0 )
+        $("#departmann li").removeClass("disabledLi");
+
 });
 
+// yab. ver. akt. verilerde tek bir cevabın seçilmesi
+
+$("#yabanciveriler").on("click","li",function() {
+    if ($("#yabanciveriler .chosen").length == 2)
+    {    
+        $("#yabanciveriler li").removeClass("chosen")
+        this.addClass("chosen");
+    }
+    else if($("#yabanciveriler .chosen").length == 1)
+        $("#yabanciveriler li:not(.chosen)").addClass("disabledLi");
+    else
+        $("#yabanciveriler li:not(.chosen)").removeClass("disabledLi");
+});
+
+
+//arama çubuğu ve mercek css
+$(".myInput").focus(function(){
+    $(".glassSpan").css("border-top","#2ecc71 3px solid");
+    $(".glassSpan").css("border-left","#2ecc71 3px solid");
+    $(".glassSpan").css("border-bottom","#2ecc71 3px solid");
+    $(".glassSpan").css("transition","250ms");
+});
+$(".myInput").focusout(function(){
+    $(".glassSpan").css("border-top","black 1px solid");
+    $(".glassSpan").css("border-left","black 1px solid");
+    $(".glassSpan").css("border-bottom","black 1px solid");
+    $(".glassSpan").css("transition","250ms");
+});
+
+//veri envanteri verileri excel halinde indirme
+
+function downloadExcel()
+{
+    const pathName = window.location.pathname;
+    console.log(pathName);
+
+
+    var wb = XLSX.utils.table_to_book(document.getElementsByClassName('table')[0], {sheet:"Sheet JS"});
+    
+    var ws = wb.Sheets["Sheet JS"];
+
+    
+
+    var wscols = [
+        {wch:5},
+        {wch:25},
+        {wch:25},
+        {wch:25},
+        {wch:25},
+        {wch:25},
+        {wch:25},
+        {wch:25},
+        {wch:25},
+        {wch:25},
+        {wch:25},
+        {wch:25},
+        {wch:25},
+        {wch:25}
+    ];
+    
+    
+    ws['!cols'] = wscols;
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    const noRows = range.e.r; // No. of cols
+
+    var wsrows = [];
+    const str = "ABCDEFGHIJKLMN";
+    var maxLength = 0;
+
+    
+     for(var i = 1 ; i < noRows+2 ; i++)
+     {
+         for (var j = 0;j<str.length;j++)
+
+             {
+                 if (i === 1) // headers
+                {
+                ws[str.charAt(j)+i].s = {
+                    fill:{
+                        fgColor:{ rgb: "FF6C757D" },
+                        // bgColor:{rgb:"FFFFFFFF"},
+                        patternType:"solid"
+                    },
+                    font: {
+                        name: "Calibri",
+                        sz: 12,
+                        bold: true,
+                        color: { rgb: "FFFFFFFF" },
+                    },
+                    alignment:{
+                        horizontal:"center",
+                        wrapText: true,
+                        vertical:"center"
+                        },
+                    border:{
+                        top:{},
+                        bottom: {style:"medium",
+                                color:{rgb:"00000000"}},
+                        left:   {style:"medium",
+                                 color:{rgb:"00000000"}},
+                        right:  {style:"medium",
+                                color:{rgb:"00000000"}}
+                    }    
+                    };
+                }
+                else //other elements 
+                {
+                    if (i%2 == 1) //tek satırlar
+                    {
+                    ws[str.charAt(j)+i].s = {
+                        fill:{
+                            fgColor:{ rgb: "FFADB5BD" },
+                            bgColor:{rgb:"00000000"},
+                            patternType:"solid"
+                        },
+                        font: {
+                            name: "Calibri",
+                            sz: 11,
+                            color: { rgb: "00000000" },
+                        },
+                        alignment:{
+                            wrapText: true,
+                            horizontal:"center"
+                        },
+                        border:{
+                            top:{},
+                            bottom: {style:"medium",
+                                    color:{rgb:"00000000"}},
+                            left:   {style:"medium",
+                                     color:{rgb:"00000000"}},
+                            right:  {style:"medium",
+                                    color:{rgb:"00000000"}}
+                        }    
+                    };
+                }
+                    else    // çift satırlar
+                    {
+                        ws[str.charAt(j)+i].s = {
+                            fill:{
+                                fgColor:{ rgb: "FFCED4DA" },
+                                bgColor:{rgb:"00000000"},
+                                patternType:"solid"
+                            },
+                            font: {
+                                name: "Calibri",
+                                sz: 11,
+                                color: { rgb: "00000000" },
+                            },
+                            alignment:{
+                                wrapText: true,
+                                horizontal:"center"
+                            },
+                            border:{
+                                top:{},
+                                bottom: {style:"medium",
+                                        color:{rgb:"00000000"}},
+                                left:   {style:"medium",
+                                         color:{rgb:"00000000"}},
+                                right:  {style:"medium",
+                                        color:{rgb:"00000000"}}
+                            }    
+                        };
+                    }
+
+                } 
+
+
+                 if( ws[str.charAt(j)+i]["v"].length > maxLength ) // max lenght 
+                    maxLength = ws[str.charAt(j)+i.toString()]["v"].length;
+
+     
+             }
+             wsrows.push({hpt:12*((maxLength/25)+1)});
+             maxLength =0
+     }
+
+    
+
+    ws['!rows'] = wsrows; // ws - worksheet
+
+    console.log(ws[str.charAt(1)+1]["v"].length);
+
+
+    var wbout = XLSX.write(wb, {bookType:'xlsx', bookSST:true, type: 'binary'});
+        function s2ab(s) {
+                        var buf = new ArrayBuffer(s.length);
+                        var view = new Uint8Array(buf);
+                        for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+                        return buf;
+        }
+        
+    saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'test.xlsx');
+            
+}
     
 
 

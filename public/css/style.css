@@ -15,7 +15,12 @@
     --liNumberDeactive:#212529;
     --chosen:#bdef53;
 }
-
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
 body{
     background-color: #DDDDDD;
     font-family: "Ubuntu";
@@ -102,11 +107,12 @@ select{
 
 .input-panel{
     border: outset var(--inputBorder) 5px;
-     width: 80%;
+     width: 75%;
     height: 250px; 
      position: relative;
-    left: 10%; 
+    left: 12.5%; 
     overflow: auto;
+    color: #0d3055;
     /* text-align: center; */
     
     
@@ -115,6 +121,9 @@ select{
     border-top-width: 0.1rem;
     background-color: white
 
+}
+.input-panel ul{
+    background-color: #f8fcfff5;
 }
 
 .input-panel ul li{
@@ -127,11 +136,20 @@ select{
     justify-content: space-between;
     position: relative;
     left: 1%;
+    font-weight: 500;
     
+}
+
+.myInput:focus{
+    border-top: #2ecc71 3px solid;
+    border-right: #2ecc71 3px solid;
+    border-bottom: #2ecc71 3px solid;
+    transition: 250ms;
 }
 .favori{
     font-weight: 900;
     color: var(--warning);
+    transition: 1000ms;
     
 }
 
@@ -140,12 +158,17 @@ select{
 }
 .carousel-inner input{
     margin-top: 1rem;
-    width: 40%;
+    width: 30%;
     position: relative;
-    left: 20%;
-    border: outset var(--inputBorder) 1px;
+    left: 15%;
+     
+    border: solid rgb(0, 0, 0) 1px;
     border-radius: 0.5rem;
-
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: 0;
+    transition: 250ms;
+    padding-left: 3px;
    
 }
 .carousel-item p{
@@ -162,14 +185,16 @@ select{
 }
 
 
+
 h4
 {
+   
     position: relative;
-    left: 10%;
+    left: 12.5%;
     text-align: center;
     border: outset;
     border-color: var(--inputBorder);
-    width: 80%;
+    width: 75%;
     border-radius: 1rem;
     margin-bottom: 0;
     border-bottom-left-radius: 0;
@@ -180,15 +205,37 @@ h4
 .carousel-inner .search-star
 {
     position: absolute;
-    left: 56%;
-    top: 92.5%;
+    left: 45%;
+    top: 93.5%;
+    
+}
+
+.glassSpan{
+    background-color: white;
+    display: inline-block;
+    border: black 1px solid;
+    border-right: 0;
+    width:30px;
+    border-radius: 0.5rem;
+    border-bottom-right-radius:0 ;
+    border-top-right-radius:0;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    left: 16%;
+    text-align: center;
+}
+.glassSpan::before{
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f002";
     
 }
 .carousel-inner .search-glass
 {
     position: absolute;
-    left: 21%;
-    top: 92.5%;
+    left: 12%;
+    top: 93.5%;
 
 }
 
@@ -213,6 +260,7 @@ body > div.container.mt-3{
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
+    margin-top: 1rem;
 }
 
 .carousel-header div{
@@ -250,16 +298,31 @@ body > div.container.mt-3{
     padding-top: 1rem;
     padding-bottom: 5rem;
 }
+.inputdiv{
+    margin-bottom: 1rem;
+}
 
 .select-firm
 {   
     height: auto;
-    width: 60%;
+    width: 80%;
     margin-top: 5%;
     margin-left: 20%;
     padding:10rem 10rem;
     font-family: "Ubuntu";
 
+}
+.select-firm p{
+    position: relative;
+    left: 7%;
+    margin-bottom: 25px;
+}
+
+#saveDataButton{
+position: relative;
+left:31% ;
+margin-top: 0.5rem;
+margin-bottom: 5rem;
 }
 
 .select-firm select
@@ -276,7 +339,7 @@ button[disabled]{
 }
 
 .disabledLi{
-    border: 1px solid #999999;
+    
     background-color: var(--inactiveButton);
     color: #666666;
 }
@@ -291,6 +354,7 @@ button[disabled]{
     padding-left: 5%;
     
 }
+
 
 .veri-envanteri-section
 {
@@ -494,6 +558,7 @@ display: none;
     left: -5px;
     content: "\2714";
   }
+
   
   /* Add a red text color and an "x" icon when the requirements are wrong */
   .invalid {
@@ -575,10 +640,78 @@ border-top: black 1px solid;;
     
     position: relative;
     left: -5px;
-    font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f1c2"
+    font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f1c2";
 }
 #downloadPdf:before{
     position: relative;
     left: -5px;
-    font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f1c1"
+    font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f1c1";  
+}
+
+#favoributton{
+position: relative;
+left: 17%;
+
+}
+#favoributton::before{
+    font-family: "Font Awesome 5 Free"; font-weight: 900; content:"\f005";
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  height: 100px;
+  width: 100px;
+  outline: black;
+  background-size: 100%, 100%;
+
+  background-image: none;
+}
+
+.carousel-control-next-icon:after
+{
+  content: '>';
+  font-size: 55px;
+  color: rgb(32, 27, 27);
+}
+
+.carousel-control-prev-icon:after {
+  content: '<';
+  font-size: 55px;
+  color: rgb(32, 27, 27);
+}
+
+.btnn
+{
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.btnn:hover{
+    transform: scale(1.05);
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.favori-active{
+    border: 1px #950101 solid;
+    background-color: #950101;
+    color: white;
+    transition: 200ms;
+}
+.favori-deactive{
+    background-color: transparent;
+    border:1px #950101 solid;
+    color:#950101;
+    transition: 200ms;
 }

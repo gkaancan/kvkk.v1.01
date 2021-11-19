@@ -5,54 +5,54 @@
       <h1>Veri Girişi</h1>
       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem quaerat voluptates nam ducimus accusamus
         quasi quos corporis fugiat numquam laborum!</p>
- 
+
     </div>
   </div>
+  <section class="carousel-header">
+    <div class="head active" id="Departman">
+      Departman
+    </div>
+    <div class="head" id="Süreç">
+      Süreç
+    </div>
+    <div class="head" id="Veri-Kategorisi">
+      Veri Kategorisi
+    </div>
+    <div class="head" id="Kişisel-Veri">
+      Kişisel Veri
+    </div>
+    <div class="head" id="Özel-Nitelikli-Kişisel-Veri">
+      Özel Nitelikli Kişisel Veri
+    </div>
+    <div class="head" id="İşleme-Amaçları">
+      İşleme Amaçları
+    </div>
+    <div class="head" id="İlgili-Kişi">
+      İlgili Kişi
+    </div>
+    <div class="head" id="Hukuki-Sebebi">
+      Hukuki Sebebi
+    </div>
+    <div class="head" id="Saklama-Süresi">
+      Saklama Süresi
+    </div>
+    <div class="head" id="Alıcı-Grupları">
+      Alıcı / Alıcı Grupları
+    </div>
+    <div class="head" id="Yabancı-Ülkelere-Aktarılan-Veriler">
+      Yab. Ülk. Akt. Veriler
+    </div>
+    <div class="head" id="Teknik-Tedbirler">
+      Teknik Tedbirler
+    </div>
+    <div class="head" id="İdari-Tedbirler">
+      İdari Tedbirler
+    </div>
 
-  <div class="container mt-3">
+  </section>
+  <div class="container">
 
-    <section class="carousel-header">
-      <div class="head active" id="Departman">
-        Departman
-      </div>
-      <div class="head" id="Süreç">
-        Süreç
-      </div>
-      <div class="head" id="Veri-Kategorisi">
-        Veri Kategorisi
-      </div>
-      <div class="head" id="Kişisel-Veri">
-        Kişisel Veri
-      </div>
-      <div class="head" id="Özel-Nitelikli-Kişisel-Veri">
-        Özel Nitelikli Kişisel Veri
-      </div>
-      <div class="head" id="İşleme-Amaçları">
-        İşleme Amaçları
-      </div>
-      <div class="head" id="İlgili-Kişi">
-        İlgili Kişi
-      </div>
-      <div class="head" id="Hukuki-Sebebi">
-        Hukuki Sebebi
-      </div>
-      <div class="head" id="Saklama-Süresi">
-        Saklama Süresi
-      </div>
-      <div class="head" id="Alıcı-Grupları">
-        Alıcı / Alıcı Grupları
-      </div>
-      <div class="head" id="Yabancı-Ülkelere-Aktarılan-Veriler">
-        Yabancı Ülkelere Aktarılan Veriler
-      </div>
-      <div class="head" id="Teknik-Tedbirler">
-        Teknik Tedbirler
-      </div>
-      <div class="head" id="İdari-Tedbirler">
-        İdari Tedbirler
-      </div>
 
-    </section>
     <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
 
       <!-- Indicators -->
@@ -80,25 +80,37 @@
           <h4>Departman</h4>
           <div class="input-panel" name="departman" id="departmann">
             <ul>
-              <li>İnsan Kaynakları <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Destek Hizmetleri<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Muhasebe<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Kurumsal İlişkiler<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Bilgi İşlem<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Satış<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Dijital Pazarlama<span><i class="far fa-star" style="display: none;"></i></span></li>
+
+              <%for (let i = 0; i< data[0].length ; i++){ %>
+              <% if (favoris["departman"].includes(data[0][i])){ %>
+              <li> <%= data[0][i] %><span><i class="far fa-star favori"></i></span></li>
+              <%}else{ %>
+              <li> <%= data[0][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+              <% } %>
+              <% } %>
+
+
+              <% for(let i = 0 ;i< extras["departman"].length;i++) { %>
+              <% if (favoris["departman"].includes(extras["departman"][i])){ %>
+              <li> <%= extras["departman"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+              <%}else{ %>
+              <li> <%= extras["departman"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+              <% } %>
+              <% } %>
+
+
             </ul>
             <p></p>
-            <div class="buttons">
-              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
-              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
-                Dön</button>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
             </div>
           </div>
           <div class="inputdiv">
-            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
-            <i class="far fa-star search-star" onclick='pulse(this)'></i>
-            <i class="fas fa-search search-glass"></i>
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
           </div>
         </div>
 
@@ -106,25 +118,34 @@
           <h4>Süreç</h4>
           <div class="input-panel" name="surec">
             <ul>
-              <li>Çalışan Özlük Dosyası Oluşturma<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Hizmet İçi Eğitim Planlamasi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>İşyeri Kişisel Sağlık Dosyası Oluşturma<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Mahkeme veya İcra Dairesi Taleplerinin Cevaplandirilması<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Özel Sağlık Sigortası Tahsisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Müşteri Hizmet Dökümü Tutulması<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Tedarikçi Hizmet Dosyası Oluşturma<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <%for (let i = 0; i< data[1].length ; i++){ %>
+                <% if (favoris["surec"].includes(data[1][i])){ %>
+                <li> <%= data[1][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                <li> <%= data[1][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["surec"].length;i++) { %>
+                <% if (favoris["surec"].includes(extras["surec"][i])){ %>
+                <li> <%= extras["surec"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                <li> <%= extras["surec"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
             </ul>
             <p></p>
-            <div class="buttons">
-              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
-              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
-                Dön</button>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
             </div>
           </div>
-          <div class="inputdiv">
-            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
-            <i class="far fa-star search-star" onclick='pulse(this)'></i>
-            <i class="fas fa-search search-glass"></i>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
           </div>
         </div>
 
@@ -132,44 +153,34 @@
           <h4>Veri Kategorisi</h4>
           <div class="input-panel" name="veriKategorisi">
             <ul>
-              <li>Kimlik <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>İletişim <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Lokasyon <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Özlük <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Hukuki İşlem <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Müşteri İşlem <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Fiziksel Mekan Güvenliği <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>İşlem Güvenliği <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Risk Yönetimi <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Finans <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Pazarlama <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Görsel ve İşitsel Kayıtlar <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Irk ve Etnik Köken <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Siyasi Düşünce Bilgileri <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Felsefi inanç, Din, Mezhep ve Diğer İnançlar <span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Kılık ve Kıyafet <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Dernek Üyeliği <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Vakıf Üyeliği <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Sendika Üyeliği <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Sağlık Bilgileri <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Cinsel Hayat <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Ceza Mahkumiyeti ve Güvenlik Tedbirleri <span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Biometrik Veri <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Genetik Veri <span><i class="far fa-star" style="display: none;"></i></span></li>
+              <%for (let i = 0; i< data[2].length ; i++){ %>
+                <% if (favoris["veriKategorisi"].includes(data[2][i])){ %>
+                <li> <%= data[2][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                <li> <%= data[2][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["veriKategorisi"].length;i++) { %>
+                <% if (favoris["veriKategorisi"].includes(extras["veriKategorisi"][i])){ %>
+                <li> <%= extras["veriKategorisi"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                <li> <%= extras["veriKategorisi"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
             </ul>
             <p></p>
-            <div class="buttons">
-              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
-              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
-                Dön</button>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
             </div>
           </div>
           <div class="inputdiv">
-            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
-            <i class="far fa-star search-star" onclick='pulse(this)'></i>
-            <i class="fas fa-search search-glass"></i>
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
           </div>
         </div>
 
@@ -179,55 +190,33 @@
           <h4>Kişisel Veri</h4>
           <div class="input-panel" name="kisiselVeri">
             <ul>
-              <li>Ad,Soyad<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Adres Bilgisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Anne- Baba Adı<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Bakmakla Yükümlü Olduğu Kişilerin Ad ve Soyad Bilgisi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Banka IBAN Numarası<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Dijital İz Verisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Dijital Pazarlama<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Eğitim Verisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>E-Posta<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Fatura Bilgileri Verisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Finansal Veri<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Fotoğraf<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>İmza Beyanı<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>İzin Belgesi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>İnsan Kaynakları<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Kamera Kaydı<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Konum/Lokasyon Verisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Kurum Sicil No<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Kurum ve Unvan Bilgisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Mal Bildirimi Bayanı<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Meslek<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Mesleki Veriler<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Müşteri Bilgileri Verisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Ofis G/Ç Zamanı<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Özlük Bilgisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Pazarlama Verisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Performans ve Kariyer Gelişim Verisi<span><i class="far fa-star" style="display: none;"></i></span>
-              </li>
-              <li>Resim<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Risk Yönetim Verisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Seyahat Verisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Talep/Şikayet Yönetim Bilgisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Taşıt Verisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>TC Kimlik No <span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Tedarikçi Verisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Telefon Numarası<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <%for (let i = 0; i< data[3].length ; i++){ %>
+                <% if (favoris["kisiselVeri"].includes(data[3][i])){ %>
+                <li> <%= data[3][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                <li> <%= data[3][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+                <% for(let i = 0 ;i< extras["kisiselVeri"].length;i++) { %>
+                <% if (favoris["kisiselVeri"].includes(extras["kisiselVeri"][i])){ %>
+                <li> <%= extras["kisiselVeri"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                <li> <%= extras["kisiselVeri"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
             </ul>
             <p></p>
-            <div class="buttons">
-              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
-              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
-                Dön</button>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
             </div>
           </div>
           <div class="inputdiv">
-            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
-            <i class="far fa-star search-star" onclick='pulse(this)'></i>
-            <i class="fas fa-search search-glass"></i>
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
           </div>
         </div>
 
@@ -235,25 +224,36 @@
           <h4>Özel Nitelikli Kişisel Veri</h4>
           <div class="input-panel" name="ozelNitelikliKisiselVeri">
             <ul>
-              <li>Adli Sicil Kaydı<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Sağlık Raporu<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Biyometrik/ Genetik Veri<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Üyelik Verisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Güvenlik Verisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Hukuki İşlem ve Uyum Verisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Kılık Kıyafet Verisi<span><i class="far fa-star" style="display: none;"></i></span></li>
+              
+              <%for (let i = 0; i< data[4].length ; i++){ %>
+                <% if (favoris["ozelNitelikliKisiselVeri"].includes(data[4][i])){ %>
+                <li> <%= data[4][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                <li> <%= data[4][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["ozelNitelikliKisiselVeri"].length;i++) { %>
+                <% if (favoris["ozelNitelikliKisiselVeri"].includes(extras["ozelNitelikliKisiselVeri"][i])){ %>
+                <li> <%= extras["ozelNitelikliKisiselVeri"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                <li> <%= extras["ozelNitelikliKisiselVeri"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+
             </ul>
             <p></p>
-            <div class="buttons">
-              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
-              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
-                Dön</button>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
             </div>
           </div>
-          <div class="inputdiv">
-            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
-            <i class="far fa-star search-star" onclick='pulse(this)'></i>
-            <i class="fas fa-search search-glass"></i>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
           </div>
         </div>
 
@@ -262,113 +262,34 @@
           <h4>İşleme Amaçları</h4>
           <div class="input-panel" name="islemeAmaclari">
             <ul>
-              <li>Acil Durum Yönetimi Süreçlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Bilgi Güvenliği Süreçlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Çalışan Adayı / Stajyer / Öğrenci Seçme ve Yerleştirme Süreçlerinin Yürütülmesi<span><i
-                    class="far fa-star" style="display: none;"></i></span></li>
-              <li>Çalışan Adaylarının Başvuru Süreçlerinin Yönetilmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Çalışan Memnuniyeti VE Bağlılığı Süreçlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Çalışan İçin İş Akdi Ve Mevzuattan Kaynaklı Yükümlülüklerin Yerine Getirilmesi<span><i
-                    class="far fa-star" style="display: none;"></i></span></li>
-              <li>Çalışanlar İçin Yan Haklar Ve Menfaatleri Süreçlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Denetim / Etik Faaliyetlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Eğitim Faaliyetlerinin Yürütülmesi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Erişim Yetkilerinin Yürütülmesi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Faaliyetlerin Mevzuata Uygun Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Finans Ve Muhasebe İşlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Firma / Ürün / Hizmetlere Bağlılık Süreçlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Fiziksel Mekan Güvenliğinin Temini<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Görevlendirme Süreçlerinin Yürütülmesi<span><i class="far fa-star" style="display: none;"></i></span>
-              </li>
-              <li>Hukuk İşlerinin Takibi ve Yürütülmesi<span><i class="far fa-star" style="display: none;"></i></span>
-              </li>
-              <li>İç Denetim / Soruşturma / İstihbarat Faaliyetlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>İletişim Faaliyetlerinin Yürütülmesi<span><i class="far fa-star" style="display: none;"></i></span>
-              </li>
-              <li>İnsan Kaynakları Süreçlerinin Planlanması<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>İş FaaliyetlerininYürütülmesi/ Denetimi<span><i class="far fa-star" style="display: none;"></i></span>
-              </li>
-              <li>İş Sağlığı / Güvenliği Faaliyetlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>İş Süreçlerinin İyleştirilmesine Yönelik Önerilerin Alınması ve Değerlendirilmesi<span><i
-                    class="far fa-star" style="display: none;"></i></span></li>
-              <li>İş Sürekliliğinin Sağlanması Faaliyetlerin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Lojistik Faaliyetlerin Yürütülmesi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Mal / Hizmet Satın Alım Süreçlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Mal / Hizmet Satış Sonrası Destek Hizmetlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Mal / Hizmet Satış Süreçlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Mal / Hizmet Üretim ve Operasyon Süreçlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Müşteri İlişkileri Yönetimi Süreçlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Müşteri Memnuniyetine Yönelik Aktivitelerin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Organizasyon ve Etkinlik Yönetimi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Pazarlama Analiz Çalışmalarının Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Performans Değerlendirme Süreçlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Reklam / Kampanya / Promosyon Süreçlerinin Yönetilmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Risk Yönetimi Süreçlerinin Yürütülmesi<span><i class="far fa-star" style="display: none;"></i></span>
-              </li>
-              <li>Saklama ve Arşiv Faaliyetlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Sosyal Sorumluluk ve Sivil Toplum Aktivitelerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Sözleşme Süreçlerinin Yürütülmesi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Sponsorluk Faaliyetlerinin Yürütülmesi<span><i class="far fa-star" style="display: none;"></i></span>
-              </li>
-              <li>Stratejik Planlama Faaliyetlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Talep / Şikayetlerin Takibi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Taşınır Mal ve Kaynakların Güvenliğinin Temini<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Tedarik Zinciri Yönetimi Süreçlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Ücret Politikasının Yürütülmesi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Ürün / Hizmetlerin Pazarlama Süreçlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Veri Sorumlusu Operasyonlarının Güvenliğinin Temini<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Yabancı Personel Çalışma ve Oturma İzin İşlemleri<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Yatırım Süreçlerinin Yürütülmesi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Yetenek / Kariyer Gelişimi Faaliyetlerinin Yürütülmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Yetkili Kişi, Kurum ve Kuruluşlara Bilgi Verilmesi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Yönetim Faaliyetlerinin Yürütülmesi<span><i class="far fa-star" style="display: none;"></i></span>
-              </li>
-              <li>Ziyaretçi Kayıtlarının Oluşturulması ve Takibi<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
+              <%for (let i = 0; i< data[5].length ; i++){ %>
+                <% if (favoris["islemeAmaclari"].includes(data[5][i])){ %>
+                <li> <%= data[5][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                <li> <%= data[5][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["islemeAmaclari"].length;i++) { %>
+                <% if (favoris["islemeAmaclari"].includes(extras["islemeAmaclari"][i])){ %>
+                <li> <%= extras["islemeAmaclari"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                <li> <%= extras["islemeAmaclari"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
             </ul>
             <p></p>
-            <div class="buttons">
-              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
-              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
-                Dön</button>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
             </div>
           </div>
-          <div class="inputdiv">
-            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
-            <i class="far fa-star search-star" onclick='pulse(this)'></i>
-            <i class="fas fa-search search-glass"></i>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
           </div>
         </div>
 
@@ -376,32 +297,34 @@
           <h4>İlgili Kişi</h4>
           <div class="input-panel" name="ilgiliKisi">
             <ul>
-              <li>Çalışan Adayı<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Çalışan<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Denek<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Habere Konu Kişi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Hissedar / Ortak<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Potansiyel Ürün veya Hizmet Alıcısı<span><i class="far fa-star" style="display: none;"></i></span>
-              </li>
-              <li>Sınav Adayı<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Stajyer<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Tedarikçi Çalışan<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Tedarikçi Yetkilisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Ürün veya Hizmet Alan Kişi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Veli / Vasi / Temsilci<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Ziyaretçi<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <%for (let i = 0; i< data[6].length ; i++){ %>
+                <% if (favoris["ilgiliKisi"].includes(data[6][i])){ %>
+                <li> <%= data[6][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                <li> <%= data[6][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["ilgiliKisi"].length;i++) { %>
+                <% if (favoris["ilgiliKisi"].includes(extras["ilgiliKisi"][i])){ %>
+                <li> <%= extras["ilgiliKisi"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                <li> <%= extras["ilgiliKisi"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
             </ul>
             <p></p>
-            <div class="buttons">
-              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
-              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
-                Dön</button>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
             </div>
           </div>
-          <div class="inputdiv">
-            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
-            <i class="far fa-star search-star" onclick='pulse(this)'></i>
-            <i class="fas fa-search search-glass"></i>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
           </div>
         </div>
 
@@ -409,23 +332,35 @@
           <h4>Hukuki Sebebi</h4>
           <div class="input-panel" name="hukukiSebebi">
             <ul>
-              <li>Sözleşmenin imzalanması<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Kanunlarda öngörülmesi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Açık Rıza alınması<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Veri Sorumlusunun meşru menfaatleri<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Özlük Dosyasının Oluşturulması<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <%for (let i = 0; i< data[7].length ; i++){ %>
+                <% if (favoris["hukukiSebebi"].includes(data[7][i])){ %>
+                <li> <%= data[7][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                <li> <%= data[7][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["hukukiSebebi"].length;i++) { %>
+                <% if (favoris["hukukiSebebi"].includes(extras["hukukiSebebi"][i])){ %>
+                <li> <%= extras["hukukiSebebi"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                <li> <%= extras["hukukiSebebi"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+
             </ul>
             <p></p>
-            <div class="buttons">
-              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
-              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
-                Dön</button>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
             </div>
           </div>
-          <div class="inputdiv">
-            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
-            <i class="far fa-star search-star" onclick='pulse(this)'></i>
-            <i class="fas fa-search search-glass"></i>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
           </div>
         </div>
 
@@ -433,39 +368,35 @@
           <h4>Saklama Süresi</h4>
           <div class="input-panel" name="saklamaSuresi">
             <ul>
-              <li>İşten Ayrılmasından İtibaren 10 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Sözleşmenin Sona Erdiği Tarihten İtibaren<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Eğitimin Tamamlanmasından İtibaren 1 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>İhalenin Tamamlanmasından İtibaren 10 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Ziyaretin Tamamlanmasından İtibaren 6 ay<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Onayın Geri Alındığı Tarihten İtibaren 2 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Faaliyetin Sona Ermesinden İtibaren 10 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Etkinliğin Sona Ermesinden İtibaren 2 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>İş İlişkilerinin Sona Ermesinden İtibaren 5 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Pay Defterinin Saklanma Zorunluluğu Sebebiyle Süresiz<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Anketin Doldurulduğu Yılın Sona Ermesine Müteakiben 1 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>En Az 2 Yıl Olmak Suretiyle İş Davalarına Konu Olabilmesi Sebebiyle 10 Yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>90 Gün<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>1 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>2 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>3 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>5 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>10 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>13 Ay<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>15 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>En Az 20 yıl<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <%for (let i = 0; i< data[8].length ; i++){ %>
+                <% if (favoris["saklamaSuresi"].includes(data[8][i])){ %>
+                <li> <%= data[8][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                <li> <%= data[8][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["saklamaSuresi"].length;i++) { %>
+                <% if (favoris["saklamaSuresi"].includes(extras["saklamaSuresi"][i])){ %>
+                <li> <%= extras["saklamaSuresi"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                <li> <%= extras["saklamaSuresi"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+
             </ul>
             <p></p>
-            <div class="buttons">
-              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
-              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
-                Dön</button>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
             </div>
           </div>
-          <div class="inputdiv">
-            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
-            <i class="far fa-star search-star" onclick='pulse(this)'></i>
-            <i class="fas fa-search search-glass"></i>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
           </div>
         </div>
 
@@ -474,77 +405,82 @@
           <h4>Alıcı / Alıcı Grupları</h4>
           <div class="input-panel" name="aliciGruplari">
             <ul>
-              <li>Gerçek Kişiler veya Özel Hukuk Kişileri<span><i class="far fa-star" style="display: none;"></i></span>
-              </li>
-              <li>Herkese Açık<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Hissedarlar<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>İş Ortakları<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>İştirakler ve Bağlı Ortaklıklar<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Tedarikçiler<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Topluluk Şirketleri<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Yetkili Kamu Kurum ve Kuruluşları<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <%for (let i = 0; i< data[9].length ; i++){ %>
+                <% if (favoris["aliciGruplari"].includes(data[9][i])){ %>
+                <li> <%= data[9][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                <li> <%= data[9][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["aliciGruplari"].length;i++) { %>
+                <% if (favoris["aliciGruplari"].includes(extras["aliciGruplari"][i])){ %>
+                <li> <%= extras["aliciGruplari"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                <li> <%= extras["aliciGruplari"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
             </ul>
             <p></p>
             <div class="buttons">
-              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
-              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
-                Dön</button>
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
             </div>
           </div>
-          <div class="inputdiv">
-            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
-            <i class="far fa-star search-star" onclick='pulse(this)'></i>
-            <i class="fas fa-search search-glass"></i>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
           </div>
         </div>
 
         <div class="carousel-item">
           <h4>Yabancı Ülkelere Aktarılan Veriler</h4>
-          <div class="input-panel" name="yabanciUlkelereAktarilanVeriler">
+          <div class="input-panel" name="yabanciUlkelereAktarilanVeriler" id="yabanciveriler">
             <ul>
-              <li>suat<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <b></b>
+              <p style="font-size: large;">Yurt dışına aktarım var mı ?</p>
+              <li>Evet</li>
+              <li>Hayır</li>
             </ul>
-            <p></p>
-            <div class="buttons">
-              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
-              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
-                Dön</button>
-            </div>
           </div>
-          <div class="inputdiv">
-            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
-            <i class="far fa-star search-star" onclick='pulse(this)'></i>
-            <i class="fas fa-search search-glass"></i>
-          </div>
+
         </div>
 
         <div class="carousel-item">
           <h4>Teknik Tedbirler</h4>
           <div class="input-panel" name="teknikTedbirler">
             <ul>
-              <li>Yetki Matrisi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Yetki Kontrol<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Erişim Logları<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Kullanıcı Hesap Yönetimi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Ağ Güvenliği<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Uygulama Güvenliği<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Şifreleme<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Sızma Testi<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Saldırı Tespit ve Önleme Sistemleri<span><i class="far fa-star" style="display: none;"></i></span>
-              </li>
-              <li>Log Kayıtları<span><i class="far fa-star" style="display: none;"></i></span></li>
+              <%for (let i = 0; i< data[11].length ; i++){ %>
+                <% if (favoris["teknikTedbirler"].includes(data[11][i])){ %>
+                <li> <%= data[11][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                <li> <%= data[11][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["teknikTedbirler"].length;i++) { %>
+                <% if (favoris["teknikTedbirler"].includes(extras["teknikTedbirler"][i])){ %>
+                <li> <%= extras["teknikTedbirler"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                <li> <%= extras["teknikTedbirler"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
             </ul>
             <p></p>
-            <div class="buttons">
-              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
-              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
-                Dön</button>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
             </div>
           </div>
-          <div class="inputdiv">
-            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
-            <i class="far fa-star search-star" onclick='pulse(this)'></i>
-            <i class="fas fa-search search-glass"></i>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
           </div>
         </div>
 
@@ -552,36 +488,36 @@
           <h4>İdari Tedbirler</h4>
           <div class="input-panel" name="idariTedbirler">
             <ul>
-              <li>Kişisel Veri İşleme Envanteri Hazırlanması<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Kurumsal Politikalar (Erişim, Bilgi Güvenliği, Kullanım, Saklama ve İmha vb.)<span><i
-                    class="far fa-star" style="display: none;"></i></span></li>
-              <li>Sözleşmeler (Veri Sorumlusu - Veri Sorumlusu, Veri Sorumlusu Veri İşleyen Arasında)<span><i
-                    class="far fa-star" style="display: none;"></i></span></li>
-              <li>Gizlilik Tahhütnameleri<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Kurum İçi Periyodik ve/veya Rastgele Denetimler<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Risk Analizleri<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>İş Sözleşmesi, Disiplin Yönetmeliği (Kanuna Uygun Hükümler İlave Edilmesi)<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Kurumsal İletişim (Kriz Yönetimi, Kurul ve İlgili Kişiyi Bilgilendirme Süreçleri, İtibar Yönetimi
-                vb.)<span><i class="far fa-star" style="display: none;"></i></span></li>
-              <li>Eğitim ve Farkındalık Faaliyetleri (Bilgi Güvenliği ve Kanun)<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
-              <li>Veri Sorumluları Sicil Bilgi Sistemine (VERBİS) Bildirim<span><i class="far fa-star"
-                    style="display: none;"></i></span></li>
+
+              <%for (let i = 0; i< data[12].length ; i++){ %>
+                <% if (favoris["idariTedbirler"].includes(data[12][i])){ %>
+                <li> <%= data[12][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                <li> <%= data[12][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["idariTedbirler"].length;i++) { %>
+                <% if (favoris["idariTedbirler"].includes(extras["idariTedbirler"][i])){ %>
+                <li> <%= extras["idariTedbirler"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                <li> <%= extras["idariTedbirler"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+                
             </ul>
             <p></p>
-            <div class="buttons">
-              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this)">Ekle</button>
-              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)">Geri
-                Dön</button>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
             </div>
           </div>
-          <div class="inputdiv">
-            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off">
-            <i class="far fa-star search-star" onclick='pulse(this)'></i>
-            <i class="fas fa-search search-glass"></i>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
           </div>
         </div>
 
@@ -604,9 +540,9 @@
 
 
   </select>
-  
+
     <button type="submit" disabled class="btn btn-success" onclick="defineChosens()" id="saveDataButton" >Kaydet</button>
-  
+
 
 
 

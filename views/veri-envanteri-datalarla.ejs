@@ -55,19 +55,84 @@
     <% for(let i = 0; i < localData.length; i++){ %>
     <tr class="table-secondary">
       <th scope="row"><%=i+1%></th>
+      <% if (localData[i]["data"].departman.length){ %>
       <td><%=localData[i]["data"].departman%></td>
+      <%}else{%>
+      <td>-</td> 
+      <%}%> 
+
+      <% if (localData[i]["data"].surec.length){ %>
       <td><%=localData[i]["data"].surec%></td>
+      <%}else{%>
+      <td>-</td> 
+      <%}%> 
+
+      <% if (localData[i]["data"].veriKategorisi.length){ %>
       <td><%=localData[i]["data"].veriKategorisi%></td>
+      <%}else{%>
+      <td>-</td> 
+      <%}%> 
+
+      <% if (localData[i]["data"].kisiselVeri.length){ %>
       <td><%=localData[i]["data"].kisiselVeri%></td>
+      <%}else{%>
+      <td>-</td> 
+      <%}%> 
+
+      <% if (localData[i]["data"].ozelNitelikliKisiselVeri.length){ %>
       <td><%=localData[i]["data"].ozelNitelikliKisiselVeri%></td>
+      <%}else{%>
+      <td>-</td> 
+      <%}%> 
+
+      <% if (localData[i]["data"].islemeAmaclari.length){ %>
       <td><%=localData[i]["data"].islemeAmaclari%></td>
+      <%}else{%>
+      <td>-</td> 
+      <%}%> 
+
+      <% if (localData[i]["data"].ilgiliKisi.length){ %>
       <td><%=localData[i]["data"].ilgiliKisi%></td>
+      <%}else{%>
+      <td>-</td> 
+      <%}%> 
+
+      <% if (localData[i]["data"].hukukiSebebi.length){ %>
       <td><%=localData[i]["data"].hukukiSebebi%></td>
+      <%}else{%>
+      <td>-</td> 
+      <%}%> 
+
+      <% if (localData[i]["data"].saklamaSuresi.length){ %>
       <td><%=localData[i]["data"].saklamaSuresi%></td>
+      <%}else{%>
+      <td>-</td> 
+      <%}%> 
+
+      <% if (localData[i]["data"].aliciGruplari.length){ %>
       <td><%=localData[i]["data"].aliciGruplari%></td>
+      <%}else{%>
+      <td>-</td> 
+      <%}%> 
+
+      <% if (localData[i]["data"].yabanciUlkelereAktarilanVeriler.length){ %>
       <td><%=localData[i]["data"].yabanciUlkelereAktarilanVeriler%></td>
+      <%}else{%>
+      <td>-</td> 
+      <%}%> 
+
+      <% if (localData[i]["data"].teknikTedbirler.length){ %>
       <td><%=localData[i]["data"].teknikTedbirler%></td>
+      <%}else{%>
+      <td>-</td> 
+      <%}%> 
+
+      <% if (localData[i]["data"].idariTedbirler.length){ %>
       <td><%=localData[i]["data"].idariTedbirler%></td>
+      <%}else{%>
+      <td>-</td> 
+      <%}%> 
+
     </tr>
     <%}%>
 
@@ -80,7 +145,7 @@
 
 
 <form action="/veri-envanteri/<%=param%>" method="post" class="veri-envanteri-buttons">
-<button type="button" class="btn btn-success">Kopyasını İndir</button>
+<button type="button" class="btn btn-success" onclick="downloadExcel()">Kopyasını İndir</button>
 <button type="submit" disabled  name="deleteRowButton"class="btn">Seçili Veriyi Sil</button>
 <button type="button" name="deleteFirmButton" class=" btn btn-danger" data-toggle="modal" data-target="#exampleModalCenter">Firmayı Sil</button>
 </form>

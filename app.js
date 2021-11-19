@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
@@ -9,13 +10,14 @@ const findOrCreate = require('mongoose-findorcreate');
 const fs = require("fs");
 const internal = require("stream");
 const { stringify } = require("querystring");
+const { env } = require('process');
 
 const app = express();
 app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(session({
-  secret: "Our little secret.",
+  secret: process.env.SECRET, 
   resave: false,
   saveUninitialized: false
 }));
@@ -41,17 +43,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-mongoose.connect("mongodb://localhost:27017/KVKK");
+mongoose.connect("mongodb+srv://kaanadmin:93589d568380459E@kvkkbeta.26dva.mongodb.net/KVKK?retryWrites=true&w=majority");
 
 
 const dataSchema = new mongoose.Schema({
   firm:{
     type:mongoose.Schema.Types.ObjectId,
     ref:"Firm"
-  },
-    user:{
-      type:mongoose.Schema.Types.ObjectId,
-      ref:"User"
   },
   data:{        
   departman:[],
@@ -76,10 +74,6 @@ const firmSchema = new mongoose.Schema({
     ref:"User"
   },
   firmName:String,
-  data:[{
-      type:mongoose.Schema.Types.ObjectId,
-      ref:"KvkkData"
-  }],
 });
 
 const userSchema = new mongoose.Schema({
@@ -97,11 +91,11 @@ const userSchema = new mongoose.Schema({
 userSchema.plugin(passportLocalMongoose,options);
 userSchema.plugin(findOrCreate);
 
-const Firm = mongoose.model('firm',firmSchema);
-const KvkkData = mongoose.model('kvkkdata',dataSchema);
-const User = mongoose.model("User", userSchema);
-const FavoriData = mongoose.model('favori',dataSchema);
-const ExtraData = mongoose.model('extra',dataSchema);
+const Firm =  mongoose.model('firm',firmSchema);
+const KvkkData =  mongoose.model('kvkkdata',dataSchema);
+const User =  mongoose.model("User", userSchema);
+const FavoriData =  mongoose.model('favori',dataSchema);
+const ExtraData =  mongoose.model('extra',dataSchema);
 
 passport.use(User.createStrategy());
 
@@ -121,7 +115,80 @@ passport.deserializeUser(function(id, done) {
 
 var message = ""; 
 
+const veriGirisiData = [
+  //deportman
+  ["İnsan Kaynakları","Destek Hizmetleri","Muhasebe","Kurumsal İlişkiler","Bilgi İşlem","Satış","Dijital Pazarlama"],
+  //Süreç
+  ["Çalışan Özlük Dosyası Oluşturma","Hizmet İçi Eğitim Planlamasi","İşyeri Kişisel Sağlık Dosyası Oluşturma","Mahkeme veya İcra Dairesi Taleplerinin Cevaplandirilması","Özel Sağlık Sigortası Tahsisi","Müşteri Hizmet Dökümü Tutulması","Tedarikçi Hizmet Dosyası Oluşturma"],
+  //Veri Kategorisi
+  ["Kimlik","İletişim","Lokasyon","Özlük","Hukuki İşlem","Müşteri İşlem","Fiziksel Mekan Güvenliği","İşlem Güvenliği","Risk Yönetimi","Finans","Pazarlama","Görsel ve İşitsel Kayıtlar","Irk ve Etnik Köken","Siyasi Düşünce Bilgileri","Felsefi inanç, Din, Mezhep ve Diğer İnançlar","Kılık ve Kıyafet","Dernek Üyeliği","Vakıf Üyeliği","Sendika Üyeliği","Sağlık Bilgileri","Cinsel Hayat","Ceza Mahkumiyeti ve Güvenlik Tedbirleri","Biometrik Veri","Genetik Veri"],
+  //kişisel veri
+  ["Ad,Soyad","Adres Bilgisi","Anne-Baba Adı","Bakmakla Yükümlü Olduğu Kişilerin Ad ve Soyad Bilgisi","Banka IBAN Numarası","Dijital İz Verisi","Dijital Pazarlama","Eğitim Verisi","E-Posta","Fatura Bilgileri Verisi","Finansal Veri","Fotoğraf","İmza Beyanı","İzin Belgesi","İnsan Kaynakları","Kamera Kaydı","Konum/Lokasyon Verisi","Kurum Sicil No","Kurum ve Unvan Bilgisi","Mal Bildirimi Bayanı","Meslek","Mesleki Veriler","Müşteri Bilgileri Verisi","Ofis G/Ç Zamanı","Özlük Bilgisi","Pazarlama Verisi","Performans ve Kariyer Gelişim Verisi","Resim","Risk Yönetim Verisi","Seyahat Verisi","Talep/Şikayet Yönetim Bilgisi","Taşıt Verisi","TC Kimlik No ","Tedarikçi Verisi","Telefon Numarası"],
+  //özel Nitelikli Kişisel Veri
+  ["Adli Sicil Kaydı","Sağlık Raporu","Biyometrik/ Genetik Veri","Üyelik Verisi","Güvenlik Verisi","Hukuki İşlem ve Uyum Verisi","Kılık Kıyafet Verisi"],
+  //İşleme Amaçları
+  ["Acil Durum Yönetimi Süreçlerinin Yürütülmesi","Bilgi Güvenliği Süreçlerinin Yürütülmesi","Çalışan Adayı / Stajyer / Öğrenci Seçme ve Yerleştirme Süreçlerinin Yürütülmesi","Çalışan Adaylarının Başvuru Süreçlerinin Yönetilmesi","Çalışan Memnuniyeti VE Bağlılığı Süreçlerinin Yürütülmesi","Çalışan İçin İş Akdi Ve Mevzuattan Kaynaklı Yükümlülüklerin Yerine Getirilmesi","Çalışanlar İçin Yan Haklar Ve Menfaatleri Süreçlerinin Yürütülmesi"
+    ,"Denetim / Etik Faaliyetlerinin Yürütülmesi"
+    ,"Eğitim Faaliyetlerinin Yürütülmesi"
+    ,"Erişim Yetkilerinin Yürütülmesi"
+    ,"Faaliyetlerin Mevzuata Uygun Yürütülmesi"
+    ,"Finans Ve Muhasebe İşlerinin Yürütülmesi"
+    ,"Firma / Ürün / Hizmetlere Bağlılık Süreçlerinin Yürütülmesi"
+    ,"Fiziksel Mekan Güvenliğinin Temini"
+    ,"Görevlendirme Süreçlerinin Yürütülmesi"
+    ,"Hukuk İşlerinin Takibi ve Yürütülmesi"
+    ,"İç Denetim / Soruşturma / İstihbarat Faaliyetlerinin Yürütülmesi"
+    ,"İletişim Faaliyetlerinin Yürütülmesi"
+    ,"İnsan Kaynakları Süreçlerinin Planlanması"
+    ,"İş FaaliyetlerininYürütülmesi/ Denetimi"
+    ,"İş Sağlığı / Güvenliği Faaliyetlerinin Yürütülmesi"
+    ,"İş Süreçlerinin İyleştirilmesine Yönelik Önerilerin Alınması ve Değerlendirilmesi"
+    ,"İş Sürekliliğinin Sağlanması Faaliyetlerin Yürütülmesi"
+    ,"Lojistik Faaliyetlerin Yürütülmesi"
+    ,"Mal / Hizmet Satın Alım Süreçlerinin Yürütülmesi"
+    ,"Mal / Hizmet Satış Sonrası Destek Hizmetlerinin Yürütülmesi"
+    ,"Mal / Hizmet Satış Süreçlerinin Yürütülmesi"
+    ,"Mal / Hizmet Üretim ve Operasyon Süreçlerinin Yürütülmesi"
+    ,"Müşteri İlişkileri Yönetimi Süreçlerinin Yürütülmesi"
+    ,"Müşteri Memnuniyetine Yönelik Aktivitelerin Yürütülmesi"
+    ,"Organizasyon ve Etkinlik Yönetimi"
+    ,"Pazarlama Analiz Çalışmalarının Yürütülmesi"
+    ,"Performans Değerlendirme Süreçlerinin Yürütülmesi"
+    ,"Reklam / Kampanya / Promosyon Süreçlerinin Yönetilmesi"
+    ,"Risk Yönetimi Süreçlerinin Yürütülmesi"
+    ,"Saklama ve Arşiv Faaliyetlerinin Yürütülmesi"
+    ,"Sosyal Sorumluluk ve Sivil Toplum Aktivitelerinin Yürütülmesi"
+    ,"Sözleşme Süreçlerinin Yürütülmesi"
+    ,"Sponsorluk Faaliyetlerinin Yürütülmesi"
+    ,"Stratejik Planlama Faaliyetlerinin Yürütülmesi"
+    ,"Talep / Şikayetlerin Takibi"
+    ,"Taşınır Mal ve Kaynakların Güvenliğinin Temini"
+    ,"Tedarik Zinciri Yönetimi Süreçlerinin Yürütülmesi"
+    ,"Ücret Politikasının Yürütülmesi"
+    ,"Ürün / Hizmetlerin Pazarlama Süreçlerinin Yürütülmesi"
+    ,"Veri Sorumlusu Operasyonlarının Güvenliğinin Temini"
+    ,"Yabancı Personel Çalışma ve Oturma İzin İşlemleri"
+    ,"Yatırım Süreçlerinin Yürütülmesi"
+    ,"Yetenek / Kariyer Gelişimi Faaliyetlerinin Yürütülmesi"
+    ,"Yetkili Kişi, Kurum ve Kuruluşlara Bilgi Verilmesi"
+    ,"Yönetim Faaliyetlerinin Yürütülmesi"
+    ,"Ziyaretçi Kayıtlarının Oluşturulması ve Takibi"],
+    //ilgili Kişi
+    ["Çalışan Adayı","Çalışan","Denek","Habere Konu Kişi","Hissedar / Ortak","Potansiyel Ürün veya Hizmet Alıcısı","Sınav Adayı","Stajyer","Tedarikçi Çalışan","Tedarikçi Yetkilisi","Ürün veya Hizmet Alan Kişi","Veli / Vasi / Temsilci","Ziyaretçi"],
+    //HukukiSebebi
+    ["Sözleşmenin imzalanması","Kanunlarda öngörülmesi","Açık Rıza alınması","Veri Sorumlusunun Meşru Menfaatleri","Özlük Dosyasının Oluşturulması"],
+    //saklama süresi
+    ["İşten Ayrılmasından İtibaren 10 yıl","Sözleşmenin Sona Erdiği Tarihten İtibaren","Eğitimin Tamamlanmasından İtibaren 1 yıl","İhalenin Tamamlanmasından İtibaren 10 yıl","Ziyaretin Tamamlanmasından İtibaren 6 ay","Onayın Geri Alındığı Tarihten İtibaren 2 yıl","Faaliyetin Sona Ermesinden İtibaren 10 yıl","Etkinliğin Sona Ermesinden İtibaren 2 yıl","İş İlişkilerinin Sona Ermesinden İtibaren 5 yıl","Pay Defterinin Saklanma Zorunluluğu Sebebiyle Süresiz","Anketin Doldurulduğu Yılın Sona Ermesine Müteakiben 1 yıl","En Az 2 Yıl Olmak Suretiyle İş Davalarına Konu Olabilmesi Sebebiyle 10 Yıl","90 Gün","1 yıl","2 yıl","3 yıl","5 yıl","10 yıl","13 Ay","15 yıl","En Az 20 yıl"],
+    //Alıcı-Alıcı Grupları
+    ["Gerçek Kişiler veya Özel Hukuk Kişileri","Herkese Açık","Hissedarlar","İş Ortakları","İştirakler ve Bağlı Ortaklıklar","Tedarikçiler","Topluluk Şirketleri","Yetkili Kamu Kurum ve Kuruluşları"],
+    //yabancı ülkelere aktarılan veriler
+    ["Evet","Hayır"],
+    //teknik tedbirler
+    ["Yetki Matrisi","Yetki Kontrol","Erişim Logları","Kullanıcı Hesap Yönetimi","Ağ Güvenliği","Uygulama Güvenliği","Şifreleme","Sızma Testi","Saldırı Tespit ve Önleme Sistemleri","Log Kayıtları"],
+    // idari tedbirler
+    ["Kişisel Veri İşleme Envanteri Hazırlanması","Kurumsal Politikalar (Erişim, Bilgi Güvenliği, Kullanım, Saklama ve İmha vb.)","Sözleşmeler (Veri Sorumlusu - Veri Sorumlusu, Veri Sorumlusu Veri İşleyen Arasında)","Gizlilik Tahhütnameleri","Kurum İçi Periyodik ve/veya Rastgele Denetimler","Risk Analizleri","İş Sözleşmesi, Disiplin Yönetmeliği (Kanuna Uygun Hükümler İlave Edilmesi)","Kurumsal İletişim (Kriz Yönetimi, Kurul ve İlgili Kişiyi Bilgilendirme Süreçleri, İtibar Yönetimi vb.)","Eğitim ve Farkındalık Faaliyetleri (Bilgi Güvenliği ve Kanun)","Veri Sorumluları Sicil Bilgi Sistemine (VERBİS) Bildirim"]
 
+];
 
 app.get("/",function(req,res)
 {   
@@ -204,7 +271,7 @@ app.post("/veri-girisi-firm/add",function(req,res){
     }
 
     else{
-      const newFirm = new Firm({
+      const newFirm =  new Firm({
         user:req.user._id,
         firmName:capitalizeFirstLetter(req.body.newFirm)
       });
@@ -217,88 +284,57 @@ app.post("/veri-girisi-firm/add",function(req,res){
         }
         else{
          message ="Firma başarıyla eklendi";
-         res.redirect("/veri-girisi-firm");
+         const localFavorities = new FavoriData({
+          firm:newFirm._id,
+          data:dataSchema.data
+        });
+        localFavorities.save();
+  
+       
+        const localExtras =  new ExtraData({
+          firm:newFirm._id,
+          data: dataSchema.data
+        });
+        localExtras.save();
+  
+        res.redirect("/veri-girisi-firm");
+         
         }
       });
+
+     
     }
   });
 
-  
 
-
-
-  // User.findById(req.user._id,function(error,user){
-  //   if(error)
-  //     {
-  //       console.log(error);
-  //       message = "Bir hata meydana geldi. Lütfen tekrar deneyin (Hata Kodu:152)";
-  //       res.redirect("/veri-girisi-firm");
-  //     }
-  //     else
-  //     {
-  //     user.firms.push(newFirm);
-  //     user.save();
-  //     message ="Firma başarıyla eklendi";
-  //     res.redirect("/veri-girisi-firm")
-  //     }  
-  // });
-
-
-  // User.find({username:req.user.username},function(err,data){
-  //   if(err)
-  //   {
-  //     console.log(err);
-  //     message = "Bir hata meydana geldi. Lütfen tekrar deneyin (Hata Kodu:152)";
-  //     res.redirect("/veri-girisi-firm");
-  //   }
-  //   //kullanıcıyı bulduk
-  //   else
-  //   {
-  //     var localFirmNames = [];
-  //     for (let i=0;i<data[0].firms.length;i++)
-  //     {
-  //       // aynı isimde firma var mı bi bakıyoruz
-  //       localFirmNames.push(data[0].firms[i].firmName);
-  //     }
-  //     if (!localFirmNames.includes(capitalizeFirstLetter(req.body.newFirm)))
-  //     {
-  //       // buraya kadar geldiyse aynı isimde firma yokmuş demektir. firmayı datasız yaratıyoruz    
-  //       const newFirm = new Firm({
-  //         firmName:capitalizeFirstLetter(req.body.newFirm)
-  //       });  
-  //       newFirm.save(); // neden kaydediyoz hiç bir fikrim yok
-
-  //       //firmayı userın içine ekliyoruz
-  //       User.findOneAndUpdate({username:req.user.username},{$push:{firms:newFirm}},function(error,result){
-  //         if(error)
-  //         {
-  //           console.log(error);
-  //           message = "Bir hata meydana geldi. Lütfen tekrar deneyin (Hata Kodu:151)";
-  //           res.redirect("/veri-girisi-firm/add");
-  //         }
-  //         else
-  //         {
-  //           console.log(result);
-  //           message ="Firma başarıyla eklendi";
-  //           res.redirect("/veri-girisi-firm")
-  //         }
-  //       });
-  //     }
-  //     else{
-  //       message = "'" + req.body.newFirm +"' zaten ekli !";
-  //       res.redirect("/veri-girisi-firm/add");
-  //     }
-  // }
-  // });
   
 });
 
 app.get("/veri-girisi/:arg",function(req,res)
 {
-  if(req.isAuthenticated)
+  if(req.isAuthenticated())
    {
-    res.render("veri-girisi",{name:req.user.name,message:message});
-    message = "";
+    Firm.find({firmName:req.params.arg,user:req.user._id},function(error,firma){
+      if(error){console.log(error);}
+      else{
+        ExtraData.find({firm:firma[0]._id},function(error,extras){
+          if(error){console.log(error);}
+          else
+          {
+            FavoriData.find({firm:firma[0]._id},function(error,favoris){
+              if(error){console.log(error);}
+              else
+              {
+                
+                res.render("veri-girisi",{name:req.user.name,message:message,data:veriGirisiData,favoris:favoris[0].data,extras:extras[0].data});
+                message = "";
+              }
+            });
+          }
+        });
+
+      }
+    }); 
   }
   else
    {
@@ -318,53 +354,49 @@ app.post("/veri-girisi/:arg",function(req,res){
       }
       else
       {
-        try
-        {
-        const localData = new KvkkData({
-          user:req.user._id,
-          firm:firma._id,
-          data:req.body.veriler[0]
-              });
-        localData.save();
+            const localData = new KvkkData({
+              firm:firma[0]._id,
+              data:req.body.veriler["veri"] || []
+                  });
+            localData.save();
 
-        FavoriData.deleteOne({firm:firma._id}).exec();      
-
-        const localFavorities = new FavoriData({
-          user:req.user._id,
-          firm:firma._id,
-          data:req.body.veriler[1]
-        });
-        localFavorities.save();
-
-        ExtraData.deleteOne({firm:firma._id}).exec()
-        const localExtras = new ExtraData({
-          user:req.user._id,
-          firm:firma._id,
-          data:req.body.veriler[2]
-        });
-        localExtras.save();
-        message= "Verileriniz başarıyla veri envanterinize kaydedildi.";
-      }
-    
-    catch{
-      message = "Veriler kaydedilemedi,muhtemelen boş bir veri seti girmeye çalıştırız. Aksi bir durum için lütfen bizi bilgilendirin";
-    }
+            console.log(req.body.veriler["favori"]);
+            FavoriData.updateOne({firm:firma[0]._id},{data:req.body.veriler["favori"] || []},function(error,result){
+              if(error){console.log("favori",error)}
+              console.log("favori",result);
+            });
+            ExtraData.updateOne({firm:firma[0]._id},{data:req.body.veriler["added"] || []},function(error,result){
+              if(error){console.log("extra",error)}
+              console.log("extra",result);});
+          res.redirect("/veri-girisi-son");                
   }
-      
   });
- res.redirect("/");        
+
+
+      
 });
 
 app.get("/veri-girisi-son",function(req,res){
   if (req.isAuthenticated())
+  {
     res.render("veri-girisi-son",{name:req.user.name,message:message});
+  }  
   else
   {
     message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
     res.redirect("/login");
   }    
-})
- 
+});
+
+app.post("/veri-girisi-son",function(req,res){
+  if (req.body.addNewData)
+    res.redirect("/veri-girisi-firm");
+  else if (req.body.dataInventory)
+    res.redirect("/veri-envanteri");
+  else if (req.body.mainMenu)
+    res.redirect("/");    
+});
+
 app.get("/veri-envanteri",function(req,res){
   
   if(req.isAuthenticated())
@@ -372,7 +404,7 @@ app.get("/veri-envanteri",function(req,res){
     Firm.find({user:req.user._id},function(err,data){
       if (err)
       {
-        console.log(err);
+        console.log("error",err);
         message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 186331";
         res.redirect("/");
       }
@@ -407,7 +439,7 @@ app.get("/veri-envanteri/:arg",function(req,res)
     Firm.find({user:req.user._id},function(error,data){
       if (error)
       {
-        console.log(err);
+        console.log(error);
         message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 475452";
         res.redirect("/");
       }
@@ -420,24 +452,24 @@ app.get("/veri-envanteri/:arg",function(req,res)
     Firm.find({user:req.user._id,firmName:req.params.arg},function(error,data){
       if (error)
       {
-        console.log(err);
+        console.log(error);
         message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 178312";
         res.redirect("/");
         
       }
       else
       {
-        KvkkData.find({user:req.user._id,firm:data._id},'data -_id',function(error,kvkk){
+        KvkkData.find({firm:data[0]._id},'data -_id',function(error,kvkk){
           if (error)
           {
-            console.log(err);
+            console.log(error);
             message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 797418";
             res.redirect("/");
           }
           else
           {
-            console.log(kvkk["data"]);
             res.render("veri-envanteri-datalarla",{firms:firmNames,param:req.params.arg,localData:kvkk,message:message,name:req.user.name});
+            
             message = "";
           }
         })
@@ -468,7 +500,7 @@ app.post("/veri-envanteri/:arg",function(req,res){
        else
        {
         
-         KvkkData.find({firm:firma._id},function(error,data){
+         KvkkData.find({firm:firma[0]._id},function(error,data){
            if (error)
            {
              console.log(error);
@@ -646,17 +678,10 @@ app.get("/documents/:arg",function(req,res){
   }
 });
 
-
-
 app.listen(3000,function()
 {
   console.log("Server started on port 3000");
 });
-
-
-
-
-
 
 
 //verilen kelimenin ilk harflerini büyük harf yapan metod

@@ -5,6 +5,7 @@
    <p style="color:#B33A3A;"><%=message%></p>     
   <form action="/veri-girisi-firm" method="POST">
     <label for="firms">Verisini işleyeceğiniz kuruluşun ismi</label>
+    <br>
       <select name="firms" id="firms">
         <% for(var i=0 ;i<firms.length; i++) {%>
             <option><%=firms[i]%></option>

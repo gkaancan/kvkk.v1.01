@@ -13,14 +13,18 @@ function search2(object)
     li = ul.getElementsByTagName('li');
     var counter = 0;
     var p = object.parentNode.parentNode.getElementsByTagName("p")[0];
-    var button = object.parentNode.parentNode.getElementsByTagName("button")[0];
-    var button2 = object.parentNode.parentNode.getElementsByTagName("button")[1];
-    var glass = object.parentNode.getElementsByTagName("i")[1];
+
+    var buttonAdd =object.parentNode.parentNode.getElementsByTagName("button")[0];
+    var buttonFavori = object.parentNode.parentNode.getElementsByTagName("button")[1];
+    var buttonBack = object.parentNode.parentNode.getElementsByTagName("button")[2];
+
     
-    if (filter === "")
-      glass.style.display = "";
-    else
-      glass.style.display = "none";
+    // var glass = object.parentNode.getElementsByTagName("i")[1];
+    
+    // if (filter === "")
+    //   glass.style.display = "";
+    // else
+    //   glass.style.display = "none";
 
 
     // Loop through all list items, and hide those who don't match the search query
@@ -34,19 +38,29 @@ function search2(object)
       if ((txtValue.toLocaleUpperCase('tr-TR').indexOf(filter) > -1) && (li[i].getElementsByTagName("i")[0].className === "far fa-star favori") ){
         li[i].style.display = "";
         p.innerHTML = "";
-        button.style.display = "none";
-        button2.style.display = "none";
+        buttonAdd.style.display = "none";
+        buttonFavori.style.display = "none";
+        buttonBack.style.display = "none";
       } else {
         li[i].style.display = "none";
         counter++;
-
       }
       if (counter === li.length)
       {
-        
+        if (!(input.value === ""))
+      {
         p.innerText = "Favoriler arasında '" + input.value + "' bulunamadı."; 
-        button.style.display = "";
-        button2.style.display = "";
+        buttonAdd.style.display = "none";
+        buttonFavori.style.display = "";
+        buttonBack.style.display = "";
+      }
+        else
+        {
+          p.innerText = "Favori listenize henüz bir şey eklemediniz.";
+          buttonAdd.style.display = "none";
+          buttonFavori.style.display = "none";
+          buttonBack.style.display = "none";
+        }
         
       }}}
     
@@ -60,8 +74,9 @@ function search2(object)
         if (txtValue.toLocaleUpperCase('tr-TR').indexOf(filter) > -1){
           li[i].style.display = "";
           p.innerHTML = "";
-          button.style.display = "none";
-          button2.style.display = "none";
+          buttonFavori.style.display="none";
+          buttonAdd.style.display = "none";
+          buttonBack.style.display = "none";
         } else {
           li[i].style.display = "none";
           counter++;
@@ -71,8 +86,9 @@ function search2(object)
         {
           
           p.innerText = "'" + input.value + "' bulunamadı."; 
-          button.style.display = "";
-          button2.style.display = "";
+          buttonAdd.style.display = "";
+          buttonBack.style.display = "";
+          buttonFavori.style.display = "none";
     }}}
   }
 
@@ -80,15 +96,22 @@ function search2(object)
 
   function pulse(object)
   {
-    var fav = object;
-    if (fav.className === "fas fa-star search-star")
+    
+
+    if (object.classList.contains("favori-deactive"))
     {
-      favori = false;
-    }  
-    else
-    {
+      object.classList.add("favori-active");
+      object.classList.remove("favori-deactive");
       favori = true;
     }
 
+      
+
+    else
+    {
+     object.classList.add("favori-deactive");
+     object.classList.remove("favori-active")
+     favori = false;
+    }
     search2(object.parentNode.getElementsByTagName("input")[0]);
   }

@@ -1,8 +1,14 @@
 <%- include('auth_header'); -%>
 
 <div class="select-firm footer-margin">
-    <p><%=message%></p>
+    <p>Verileriniz başarıyla veri envanterinize kaydedildi.</p>
+<form action="/veri-girisi-son" method="post">
+        <button type="submit" class="btn btn-secondary" name="mainMenu" value="1">Ana Menüye Dön</button>
+        <button type="submit" class="btn btn-primary" name="dataInventory" value="1">Veri Envanterine Git</button>
+        <button type="submit" class="btn btn-success" name="addNewData" value="1">Yeni Bir Veri Gir</button>
+    </form>
 </div>
+
 
               
 <%- include('footer'); -%>
