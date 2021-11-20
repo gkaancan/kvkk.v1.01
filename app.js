@@ -79,10 +79,6 @@ const firmSchema = new mongoose.Schema({
 const userSchema = new mongoose.Schema({
   name:String,
   username:String,
-  firms:[{
-    type:mongoose.Schema.Types.ObjectId,
-    ref:"Firm"
-  }],
   password:String,
   secret:String
 });
