@@ -582,7 +582,7 @@ $(".myInput").focusout(function(){
 function downloadExcel()
 {
     const pathName = window.location.pathname;
-    console.log(pathName);
+    const fileName = pathName.split("/")[pathName.split("/").length-1] + ".xlsx";
 
 
     var wb = XLSX.utils.table_to_book(document.getElementsByClassName('table')[0], {sheet:"Sheet JS"});
@@ -670,7 +670,8 @@ function downloadExcel()
                         },
                         alignment:{
                             wrapText: true,
-                            horizontal:"center"
+                            horizontal:"center",
+                            vertical:"center"
                         },
                         border:{
                             top:{},
@@ -698,7 +699,8 @@ function downloadExcel()
                             },
                             alignment:{
                                 wrapText: true,
-                                horizontal:"center"
+                                horizontal:"center",
+                                vertical:"center"
                             },
                             border:{
                                 top:{},
@@ -728,7 +730,7 @@ function downloadExcel()
 
     ws['!rows'] = wsrows; // ws - worksheet
 
-    console.log(ws[str.charAt(1)+1]["v"].length);
+    
 
 
     var wbout = XLSX.write(wb, {bookType:'xlsx', bookSST:true, type: 'binary'});
@@ -739,14 +741,10 @@ function downloadExcel()
                         return buf;
         }
         
-    saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'test.xlsx');
+    saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), fileName);
             
 }
     
-
-
-
-
 
 //dökümanlar --  numaralara tıklandığında sayfalar arası geçiş -- iptal ettim
 

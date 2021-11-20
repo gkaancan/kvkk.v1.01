@@ -4,7 +4,7 @@
     
    <p style="color:#B33A3A;"><%=message%></p>     
   <form action="/veri-girisi-firm" method="POST">
-    <label for="firms">Verisini işleyeceğiniz kuruluşun ismi</label>
+    <label for="firms">Verisini işleyeceğiniz firmanın ismi</label>
     <br>
       <select name="firms" id="firms">
         <% for(var i=0 ;i<firms.length; i++) {%>
@@ -18,7 +18,7 @@
           <%if(firms.length){%>
           <button type="submit" class="btn btn-success" name="contiune" value="contiune">Devam Et</button>
           <%}%>
-          <button type="submit" class="btn btn-info" name="add" value="add">Kuruluş Ekle</button>
+          <button type="submit" class="btn btn-info" name="add" value="add">Firma Ekle</button>
           </form>
         
    
