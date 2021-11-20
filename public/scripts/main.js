@@ -11,7 +11,7 @@ const green = "#a5be00";
 var isOnStar = false; // farenin starın üzerinde olup olmadığını kontrol eden global değişken
 const headerElements = $(".carousel-header").children();
 
-const serverUrl = "http://localhost:3000/";
+const serverUrl = window.location.href;
 
 
 
@@ -223,7 +223,7 @@ fieldNames.forEach(field => {
     
     for (var i = 0; i < document.getElementsByName(field)[0].getElementsByTagName("li").length; i++) {
         var liElement = document.getElementsByName(field)[0].getElementsByTagName("li")[i];
-        if (liElement.className === "chosen") 
+        if (liElement.classList.contains("chosen")) 
             veri[field].push(liElement.innerText);    
         if (field !== "yabanciUlkelereAktarilanVeriler" && liElement.getElementsByTagName("i")[0].classList.contains("favori"))
         {
@@ -473,16 +473,16 @@ $("#dökümanlar .docs p").on("click", function () {
 function postDocument() {
 
     const chosen = ($(".active-document .fileDate").text() + "_" + $(".active-document .fileName").text()).replace(" ", "");
-    console.log(chosen);
+    
 
-    $.ajax({
-        url: serverUrl + "documents",
+         $.ajax({
+         url: serverUrl,
         type: "POST",
-        data: chosen,
+       data: chosen,
         success: function (msg, status) {
-            console.log("success");
-            console.log(status);
-            window.location.replace("documents/" + chosen);
+             console.log("success");
+             console.log(status);
+             window.location.replace("documents/" + chosen);
 
 
         },
@@ -491,9 +491,9 @@ function postDocument() {
             console.log(status);
             console.log(err);
 
-        }
+         }
 
-    });
+     });
 
 }
 function downloadDocument(fileName, doc) {

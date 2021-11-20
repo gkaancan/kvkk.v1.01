@@ -212,6 +212,7 @@ app.get("/veri-girisi-firm",function(req,res)
         message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 871318"; 
         console.log(error);
         res.render("veri-girisi-firm",{firms:localFirmNames,name:req.user.name,message:message});
+        message = "";
        }
        else{ 
       for(let i = 0 ; i < firms.length;i++)  
@@ -247,7 +248,9 @@ app.post("/veri-girisi-firm",function(req,res){
 app.get("/veri-girisi-firm/add",function(req,res)
 {
   if (req.isAuthenticated())
-    res.render("veri-girisi-add",{message:message,name:req.user.name});
+    {res.render("veri-girisi-add",{message:message,name:req.user.name});
+      message = "";
+    }
   else
   {
     message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
@@ -263,6 +266,7 @@ app.post("/veri-girisi-firm/add",function(req,res){
       message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 487951"; 
       console.log(error);
       res.render("veri-girisi-firm/add",{firms:localFirmNames,name:req.user.name,message:message});
+      message = "";
     }
 
     if(data){
@@ -281,6 +285,7 @@ app.post("/veri-girisi-firm/add",function(req,res){
          message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 871318"; 
          console.log(error);
          res.render("veri-girisi-firm/add",{firms:localFirmNames,name:req.user.name,message:message});
+         message = "";
         }
         else{
          message ="Firma başarıyla eklendi";
@@ -380,6 +385,7 @@ app.get("/veri-girisi-son",function(req,res){
   if (req.isAuthenticated())
   {
     res.render("veri-girisi-son",{name:req.user.name,message:message});
+    message = "";
   }  
   else
   {
@@ -416,6 +422,7 @@ app.get("/veri-envanteri",function(req,res){
           localFirmNames.push(data[i].firmName);
         }
         res.render("veri-envanteri",{firms:localFirmNames,message:message,name:req.user.name});
+        message = "";
       }
     })
   }  
@@ -469,8 +476,6 @@ app.get("/veri-envanteri/:arg",function(req,res)
           else
           {
             res.render("veri-envanteri-datalarla",{firms:firmNames,param:req.params.arg,localData:kvkk,message:message,name:req.user.name});
-            
-            message = "";
           }
         })
       }
