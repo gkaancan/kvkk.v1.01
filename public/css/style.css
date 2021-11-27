@@ -374,8 +374,7 @@ button[disabled]{
 }
 
 button[name="deleteFirmButton"]{
-    position: relative;
-    left: 70%;
+float: right;
 }
 
 .veri-envanteri-buttons{
@@ -572,7 +571,7 @@ display: none;
   }
 
 .spaceforfooter{
-    margin-bottom: 200px;
+    margin-bottom: 600px;
 }
 .messageText{
     color: var(--warning);
@@ -715,3 +714,20 @@ left: 17%;
     color:#950101;
     transition: 200ms;
 }
+
+.verify-div{
+    margin-top: 250px;
+    margin-left: 150px;
+}
+.forget-password{
+   
+    position: relative;
+   margin-top: 150px;
+   margin-left: 80px;
+
+}
+
+.forget-password input{
+    width: 400px;
+}
+

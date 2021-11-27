@@ -223,14 +223,20 @@ fieldNames.forEach(field => {
     
     for (var i = 0; i < document.getElementsByName(field)[0].getElementsByTagName("li").length; i++) {
         var liElement = document.getElementsByName(field)[0].getElementsByTagName("li")[i];
-        if (liElement.classList.contains("chosen")) 
-            veri[field].push(liElement.innerText);    
+        if (liElement.classList.contains("chosen"))
+        {
+            if((liElement.innerText)[0]===" ")
+                veri[field].push(liElement.innerText.replace(" ",""));
+            else
+                veri[field].push(liElement.innerText);     
+        } 
+               
         if (field !== "yabanciUlkelereAktarilanVeriler" && liElement.getElementsByTagName("i")[0].classList.contains("favori"))
         {
             if (liElement.innerText[0] === " ")
                 favorities[field].push(liElement.innerText.replace(" ",""));
             else
-                favorities[field].push(liElement.innerText)    
+                favorities[field].push(liElement.innerText);    
 
         }
             
@@ -272,14 +278,18 @@ $.ajax({
 // veri envanterinde rowa tıklandığında rengi değişmesi ve butonun düzenlemeleri
 $(".veri-envanteri-section tbody").on("click", "tr", function () {
     var button = document.getElementsByName("deleteRowButton")[0];
+    var arrangeButton = document.getElementsByName("arrangeRowButton")[0];
     if (this.className !== "table-active") {
         button.disabled = false;
+        arrangeButton.disabled = false
         button.classList.add("btn-warning");
+        arrangeButton.classList.add("btn-info");
         var trElements = this.parentNode.getElementsByTagName("tr")
         for (let i = 0; i < trElements.length; i++) {
             trElements[i].className = "table-secondary";
             if (this === trElements[i])
                 button.value = i + 1;
+                arrangeButton.value = i+1;
         }
         this.className = "table-active";
     }
@@ -288,6 +298,8 @@ $(".veri-envanteri-section tbody").on("click", "tr", function () {
 
         button.disabled = true;
         button.classList.remove("btn-warning");
+        arrangeButton.classList.remove("btn-info");
+        arrangeButton.disabled = true;
     }
 })
 
@@ -301,6 +313,9 @@ const match = document.getElementById("match");
 $("#password").on("keyup", isMatch);
 $("#re_password").on("keyup", isMatch);
 
+$("#exampleInputPassword1").on("keyup", isMatchNewPassword);
+$("#exampleInputPassword2").on("keyup", isMatchNewPassword);
+
 function isMatch() {
     if ($("#password").val() === $("#re_password").val() && $("#password").val() !== "" && $("#re_password") !== "") {
         match.classList.add("valid");
@@ -311,6 +326,19 @@ function isMatch() {
         match.classList.remove("valid");
     }
 }
+function isMatchNewPassword() {
+    if ($("#exampleInputPassword1").val() === $("#exampleInputPassword2").val() && $("#exampleInputPassword1").val() !== "" && $("#exampleInputPassword2") !== "") {
+        match.classList.add("valid");
+        match.classList.remove("invalid");
+    }
+    else {
+        match.classList.add("invalid");
+        match.classList.remove("valid");
+    }
+}
+
+
+
 
 //register kısmında geçerli bir e mail kullanıp kullanılmadığını kontrol etme
 $("#email").on("focusout", validate);
@@ -352,7 +380,7 @@ function checkConditions() {
 }
 
 $("#password").on("keyup", function () {
-    var lowerCaseLetters = /[a-z]/g;
+    const lowerCaseLetters = /[a-z]/g;
     if ($("#password").val().match(lowerCaseLetters)) {
         letter.classList.remove("invalid");
         letter.classList.add("valid");
@@ -408,6 +436,57 @@ $("#password").on("keyup", function () {
         $("#re_password").css("border-color", errorColor);
         $("#password").css("border-color", errorColor);
     }
+});
+
+$("#exampleInputPassword1").on("keyup", function () {
+    const lowerCaseLetters = /[a-z]/g;
+    if ($("#exampleInputPassword1").val().match(lowerCaseLetters)) {
+        letter.classList.remove("invalid");
+        letter.classList.add("valid");
+
+    } else {
+        letter.classList.remove("valid");
+        letter.classList.add("invalid");
+
+    }
+
+    // Validate capital letters
+    var upperCaseLetters = /[A-Z]/g;
+    if ($("#exampleInputPassword1").val().match(upperCaseLetters)) {
+        capital.classList.remove("invalid");
+        capital.classList.add("valid");
+
+    } else {
+        capital.classList.remove("valid");
+        capital.classList.add("invalid");
+
+    }
+
+    // Validate numbers
+    var numbers = /[0-9]/g;
+    if ($("#exampleInputPassword1").val().match(numbers)) {
+        number.classList.remove("invalid");
+        number.classList.add("valid");
+
+    } else {
+        number.classList.remove("valid");
+        number.classList.add("invalid");
+
+    }
+
+    // Validate length
+    if ($("#exampleInputPassword1").val().length >= 8) {
+        len.classList.remove("invalid");
+        len.classList.add("valid");
+
+    } else {
+        len.classList.remove("valid");
+        len.classList.add("invalid");
+
+    }
+
+
+
 });
 
 $("#re_password").on("keyup", function () {
@@ -719,8 +798,6 @@ function downloadExcel()
 
                  if( ws[str.charAt(j)+i]["v"].length > maxLength ) // max lenght 
                     maxLength = ws[str.charAt(j)+i.toString()]["v"].length;
-
-     
              }
              wsrows.push({hpt:12*((maxLength/25)+1)});
              maxLength =0

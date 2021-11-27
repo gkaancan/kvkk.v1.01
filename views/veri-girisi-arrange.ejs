@@ -1,0 +1,671 @@
+<%- include('auth_header'); -%>
+
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1>Veri Düzenle - <%=firmName%></h1>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem quaerat voluptates nam ducimus accusamus
+        quasi quos corporis fugiat numquam laborum!</p>
+
+    </div>
+  </div>
+  <section class="carousel-header">
+    <div class="head active" id="Departman">
+      Departman
+    </div>
+    <div class="head" id="Süreç">
+      Süreç
+    </div>
+    <div class="head" id="Veri-Kategorisi">
+      Veri Kategorisi
+    </div>
+    <div class="head" id="Kişisel-Veri">
+      Kişisel Veri
+    </div>
+    <div class="head" id="Özel-Nitelikli-Kişisel-Veri">
+      Özel Nitelikli Kişisel Veri
+    </div>
+    <div class="head" id="İşleme-Amaçları">
+      İşleme Amaçları
+    </div>
+    <div class="head" id="İlgili-Kişi">
+      İlgili Kişi
+    </div>
+    <div class="head" id="Hukuki-Sebebi">
+      Hukuki Sebebi
+    </div>
+    <div class="head" id="Saklama-Süresi">
+      Saklama Süresi
+    </div>
+    <div class="head" id="Alıcı-Grupları">
+      Alıcı / Alıcı Grupları
+    </div>
+    <div class="head" id="Yabancı-Ülkelere-Aktarılan-Veriler">
+      Yab. Ülk. Akt. Veriler
+    </div>
+    <div class="head" id="Teknik-Tedbirler">
+      Teknik Tedbirler
+    </div>
+    <div class="head" id="İdari-Tedbirler">
+      İdari Tedbirler
+    </div>
+
+  </section>
+  <div class="container">
+
+
+    <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
+
+      <!-- Indicators -->
+      <ul class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="1" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="2" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="3" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="4" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="5" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="6" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="7" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="8" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="9" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="10" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="11" style="display: none;"></li>
+        <li data-target="#myCarousel" data-slide-to="12" style="display: none;"></li>
+      </ul>
+
+      <!-- The slideshow -->
+
+      <div class="carousel-inner">
+
+        <div class="carousel-item active">
+          <h4>Departman</h4>
+          <div class="input-panel" name="departman" id="departmann">
+            <ul>
+
+              <%for (let i = 0; i< data[0].length ; i++){ %>
+              <% if(chosenData["departman"].includes(data[0][i])){ %>
+              <li class="chosen">  
+              <%}else{%>
+              <li>
+              <%}%>
+              <% if (favoris["departman"].includes(data[0][i])){ %>
+               <%= data[0][i] %><span><i class="far fa-star favori"></i></span></li>
+              <%}else{ %>
+               <%= data[0][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+              <% } %>
+              <% } %>
+
+
+              <% for(let i = 0 ;i< extras["departman"].length;i++) { %>
+                <% if(chosenData["departman"].includes(extras["departman"][i])){ %>
+                  <li class="chosen">  
+                  <%}else{%>
+                  <li>
+                  <%}%>
+              <% if (favoris["departman"].includes(extras["departman"][i])){ %>
+               <%= extras["departman"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+              <%}else{ %>
+               <%= extras["departman"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+              <% } %>
+              <% } %>
+
+
+            </ul>
+            <p></p>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
+            </div>
+          </div>
+          <div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <h4>Süreç</h4>
+          <div class="input-panel" name="surec">
+            <ul>
+              <%for (let i = 0; i< data[1].length ; i++){ %>
+                <% if(chosenData["surec"].includes(data[1][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["surec"].includes(data[1][i])){ %>
+                 <%= data[1][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                 <%= data[1][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["surec"].length;i++) { %>
+                <% if(chosenData["surec"].includes(extras["surec"][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["surec"].includes(extras["surec"][i])){ %>
+                 <%= extras["surec"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                 <%= extras["surec"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+            </ul>
+            <p></p>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
+            </div>
+          </div>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <h4>Veri Kategorisi</h4>
+          <div class="input-panel" name="veriKategorisi">
+            <ul>
+              <%for (let i = 0; i< data[2].length ; i++){ %>
+                <% if(chosenData["veriKategorisi"].includes(data[2][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["veriKategorisi"].includes(data[2][i])){ %>
+                 <%= data[2][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                 <%= data[2][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["veriKategorisi"].length;i++) { %>
+                <% if(chosenData["veriKategorisi"].includes(extras["veriKategorisi"][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["veriKategorisi"].includes(extras["veriKategorisi"][i])){ %>
+                 <%= extras["veriKategorisi"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                 <%= extras["veriKategorisi"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+            </ul>
+            <p></p>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
+            </div>
+          </div>
+          <div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
+          </div>
+        </div>
+
+
+
+        <div class="carousel-item">
+          <h4>Kişisel Veri</h4>
+          <div class="input-panel" name="kisiselVeri">
+            <ul>
+              <%for (let i = 0; i< data[3].length ; i++){ %>
+                <% if(chosenData["kisiselVeri"].includes(data[3][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["kisiselVeri"].includes(data[3][i])){ %>
+                 <%= data[3][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                 <%= data[3][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["kisiselVeri"].length;i++) { %>
+                <% if(chosenData["kisiselVeri"].includes(extras["kisiselVeri"][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["kisiselVeri"].includes(extras["kisiselVeri"][i])){ %>
+                 <%= extras["kisiselVeri"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                 <%= extras["kisiselVeri"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+            </ul>
+            <p></p>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
+            </div>
+          </div>
+          <div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <h4>Özel Nitelikli Kişisel Veri</h4>
+          <div class="input-panel" name="ozelNitelikliKisiselVeri">
+            <ul>
+              
+              <%for (let i = 0; i< data[4].length ; i++){ %>
+                <% if(chosenData["ozelNitelikliKisiselVeri"].includes(data[4][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["ozelNitelikliKisiselVeri"].includes(data[4][i])){ %>
+                 <%= data[4][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                 <%= data[4][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["ozelNitelikliKisiselVeri"].length;i++) { %>
+                <% if(chosenData["ozelNitelikliKisiselVeri"].includes(extras["ozelNitelikliKisiselVeri"][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["ozelNitelikliKisiselVeri"].includes(extras["ozelNitelikliKisiselVeri"][i])){ %>
+                 <%= extras["ozelNitelikliKisiselVeri"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                 <%= extras["ozelNitelikliKisiselVeri"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+
+            </ul>
+            <p></p>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
+            </div>
+          </div>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
+          </div>
+        </div>
+
+
+        <div class="carousel-item">
+          <h4>İşleme Amaçları</h4>
+          <div class="input-panel" name="islemeAmaclari">
+            <ul>
+              <%for (let i = 0; i< data[5].length ; i++){ %>
+                <% if(chosenData["islemeAmaclari"].includes(data[5][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["islemeAmaclari"].includes(data[5][i])){ %>
+                 <%= data[5][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                 <%= data[5][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["islemeAmaclari"].length;i++) { %>
+                <% if(chosenData["islemeAmaclari"].includes(extras["islemeAmaclari"][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["islemeAmaclari"].includes(extras["islemeAmaclari"][i])){ %>
+                 <%= extras["islemeAmaclari"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                 <%= extras["islemeAmaclari"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+            </ul>
+            <p></p>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
+            </div>
+          </div>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <h4>İlgili Kişi</h4>
+          <div class="input-panel" name="ilgiliKisi">
+            <ul>
+              <%for (let i = 0; i< data[6].length ; i++){ %>
+                <% if(chosenData["ilgiliKisi"].includes(data[6][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["ilgiliKisi"].includes(data[6][i])){ %>
+                 <%= data[6][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                 <%= data[6][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["ilgiliKisi"].length;i++) { %>
+                <% if(chosenData["ilgiliKisi"].includes(extras["ilgiliKisi"][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["ilgiliKisi"].includes(extras["ilgiliKisi"][i])){ %>
+                 <%= extras["ilgiliKisi"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                 <%= extras["ilgiliKisi"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+            </ul>
+            <p></p>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
+            </div>
+          </div>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <h4>Hukuki Sebebi</h4>
+          <div class="input-panel" name="hukukiSebebi">
+            <ul>
+              <%for (let i = 0; i< data[7].length ; i++){ %>
+                <% if(chosenData["hukukiSebebi"].includes(data[7][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["hukukiSebebi"].includes(data[7][i])){ %>
+                 <%= data[7][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                 <%= data[7][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["hukukiSebebi"].length;i++) { %>
+                <% if(chosenData["hukukiSebebi"].includes(extras["hukukiSebebi"][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["hukukiSebebi"].includes(extras["hukukiSebebi"][i])){ %>
+                 <%= extras["hukukiSebebi"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                 <%= extras["hukukiSebebi"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+
+            </ul>
+            <p></p>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
+            </div>
+          </div>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <h4>Saklama Süresi</h4>
+          <div class="input-panel" name="saklamaSuresi">
+            <ul>
+              <%for (let i = 0; i< data[8].length ; i++){ %>
+                <% if(chosenData["saklamaSuresi"].includes(data[8][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["saklamaSuresi"].includes(data[8][i])){ %>
+                 <%= data[8][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                 <%= data[8][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["saklamaSuresi"].length;i++) { %>
+                <% if(chosenData["saklamaSuresi"].includes(extras["saklamaSuresi"][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["saklamaSuresi"].includes(extras["saklamaSuresi"][i])){ %>
+                 <%= extras["saklamaSuresi"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                 <%= extras["saklamaSuresi"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+
+            </ul>
+            <p></p>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
+            </div>
+          </div>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
+          </div>
+        </div>
+
+
+        <div class="carousel-item">
+          <h4>Alıcı / Alıcı Grupları</h4>
+          <div class="input-panel" name="aliciGruplari">
+            <ul>
+              <%for (let i = 0; i< data[9].length ; i++){ %>
+                <% if(chosenData["aliciGruplari"].includes(data[9][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["aliciGruplari"].includes(data[9][i])){ %>
+                 <%= data[9][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                 <%= data[9][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["aliciGruplari"].length;i++) { %>
+                <% if(chosenData["aliciGruplari"].includes(extras["aliciGruplari"][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["aliciGruplari"].includes(extras["aliciGruplari"][i])){ %>
+                 <%= extras["aliciGruplari"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                 <%= extras["aliciGruplari"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+            </ul>
+            <p></p>
+            <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
+            </div>
+          </div>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <h4>Yabancı Ülkelere Aktarılan Veriler</h4>
+          <div class="input-panel" name="yabanciUlkelereAktarilanVeriler" id="yabanciveriler">
+            <ul>
+              <b></b>
+              <p style="font-size: large;">Yurt dışına aktarım var mı 1</p>
+              <li>Evet</li>
+              <li>Hayır</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="carousel-item">
+          <h4>Teknik Tedbirler</h4>
+          <div class="input-panel" name="teknikTedbirler">
+            <ul>
+              <%for (let i = 0; i< data[11].length ; i++){ %>
+                <% if(chosenData["teknikTedbirler"].includes(data[11][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["teknikTedbirler"].includes(data[11][i])){ %>
+                 <%= data[11][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                 <%= data[11][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["teknikTedbirler"].length;i++) { %>
+                <% if(chosenData["teknikTedbirler"].includes(extras["teknikTedbirler"][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["teknikTedbirler"].includes(extras["teknikTedbirler"][i])){ %>
+                 <%= extras["teknikTedbirler"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                 <%= extras["teknikTedbirler"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+            </ul>
+            <p></p>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
+            </div>
+          </div>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <h4>İdari Tedbirler</h4>
+          <div class="input-panel" name="idariTedbirler">
+            <ul>
+
+              <%for (let i = 0; i< data[12].length ; i++){ %>
+                <% if(chosenData["idariTedbirler"].includes(data[12][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["idariTedbirler"].includes(data[12][i])){ %>
+                 <%= data[12][i] %><span><i class="far fa-star favori"></i></span></li>
+                <%}else{ %>
+                 <%= data[12][i] %><span><i class="far fa-star" style="display: none;"></i></span></li>
+                <% } %>
+                <% } %>
+            
+            
+                <% for(let i = 0 ;i< extras["idariTedbirler"].length;i++) { %>
+                <% if(chosenData["idariTedbirler"].includes(extras["idariTedbirler"][i])){ %>
+                <li class="chosen">  
+                <%}else{%>
+                <li>
+                <%}%>
+                <% if (favoris["idariTedbirler"].includes(extras["idariTedbirler"][i])){ %>
+                 <%= extras["idariTedbirler"][i]%><span><i class="far fa-star favori"></i><i class="far fa-trash-alt"></i></span></li>
+                <%}else{ %>
+                 <%= extras["idariTedbirler"][i]%><span><i class="far fa-star" style="display: none;"></i><i class="far fa-trash-alt"></i></span></li>
+                <% } %>
+                <% } %>
+                
+            </ul>
+            <p></p>
+             <div class="buttons">
+              <button type="submit" style="display:none;" class="btn btn-success" onclick="addItem(this,false)" >Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-danger" onclick="addItem(this,true)" >Favorilere Ekle</button>
+              <button type="submit" style="display:none;" class="btn btn-secondary" onclick="backToInputs(this)" >Geri Dön</button>
+            </div>
+          </div>
+<div class="inputdiv">
+            <span class="glassSpan"></span>
+            <input type="text" class="myInput" onkeyup="search2(this)" autocomplete="off" placeholder="Bir veri arayın veya yeni bir veri ekleyin.">
+            <button type="button" class="btnn favori-deactive" id="favoributton" onclick="pulse(this)"></button>
+          </div>
+        </div>
+
+
+
+      </div>
+
+      <!-- Left and right controls -->
+      <a class="carousel-control-prev" href="#myCarousel" data-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </a>
+      <a class="carousel-control-next" href="#myCarousel" data-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </a>
+    </div>
+
+  </div>
+
+
+
+
+  </select>
+
+    <button type="submit" disabled class="btn btn-success" onclick="defineChosens()" id="saveDataButton" >Kaydet</button>
+
+
+
+
+
+  <%- include('footer'); -%>

@@ -1,0 +1,10 @@
+<%- include('header'); -%>
+
+<div class="verify-div">
+    <p>Hesabınızı onaylamak için <%=email%> adresine bir e-posta gönderdik. Gereksiz(spam) klasörünüzü kontrol etmeyi unutmayın.</p>
+    <p> <a href="/api/resend/verify/<%=email%>">Tekrar Gönder</a></p>
+</div>
+
+<div class="spaceforfooter"></div>
+              
+<%- include('footer'); -%>
