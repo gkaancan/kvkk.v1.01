@@ -32,7 +32,8 @@ function addItem(object,favori) {
 
     var liElement = document.createElement("li");
     liElement.innerHTML = text;
-    liElement.className = "added chosen";
+    liElement.classList.add("added"); 
+    liElement.classList.add("chosen"); 
 
     var iElement = document.createElement("i");
     iElement.className = "far fa-trash-alt";
@@ -66,10 +67,10 @@ $(".input-panel ul").on("click", "li", function () {
 
     if (!isOnStar) {
         if ($(this).attr("class") !== "chosen") {
-            this.className = "chosen";
+            this.classList.add("chosen")
         }
         else {
-            this.className = "";
+            this.classList.remove("chosen");
         }
     }
 });

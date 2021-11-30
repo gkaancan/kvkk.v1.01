@@ -13,6 +13,7 @@ const { stringify } = require("querystring");
 const { env } = require('process');
 const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
+const encrypt = require('mongoose-encryption');
 
 const app = express();
 app.use(express.static(__dirname + '/public'));
@@ -74,6 +75,8 @@ const dataSchema = new mongoose.Schema({
   }
 });
 
+
+
 const firmSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -103,6 +106,10 @@ userSchema.methods.generateVerificationToken = function () {
   );
   return verificationToken;
 };
+
+userSchema.plugin(encrypt,{secret:process.env.SECRETT,encryptedFields:['name','verified']});
+dataSchema.plugin(encrypt,{secret:process.env.SECRETT,encryptedFields:['data']});
+
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -139,7 +146,7 @@ passport.deserializeUser(function (id, done) {
 
 var message = "";
 
-var dataArrange;
+
 var arrangedDataId;
 
 
@@ -231,7 +238,7 @@ app.get("/", function (req, res) {
 app.get("/veri-girisi-firm", function (req, res) {
   var localFirmNames = [];
   if (req.isAuthenticated()) {
-    Firm.find({ user: req.user._id }).select("firmName , -_id").exec(function (error, firms) {
+    Firm.find({ user: req.user._id }).exec(function (error, firms) {
       if (error) {
         message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 871318";
         console.log(error);
@@ -335,17 +342,18 @@ app.post("/veri-girisi-firm/add", function (req, res) {
 
 app.get("/veri-girisi/:arg", function (req, res) {
   if (req.isAuthenticated()) {
-    Firm.find({ firmName: req.params.arg, user: req.user._id }, function (error, firma) {
+    Firm.findOne({ firmName: req.params.arg, user: req.user._id }, function (error, firma) {
       if (error) { console.log(error); }
       else {
-        ExtraData.find({ firm: firma[0]._id }, function (error, extras) {
+         ExtraData.findOne({ firm: firma._id }, function (error, extras) {
           if (error) { console.log(error); }
           else {
-            FavoriData.find({ firm: firma[0]._id }, function (error, favoris) {
+            FavoriData.findOne({ firm: firma._id }, function (error, favoris) {
               if (error) { console.log(error); }
               else {
-
-                res.render("veri-girisi", { name: req.user.name, message: message, data: veriGirisiData, favoris: favoris[0].data, extras: extras[0].data });
+                console.log(favoris.data);
+                // console.log(extras);
+                res.render("veri-girisi", { name: req.user.name, message: message, data: veriGirisiData, favoris: favoris.data, extras: extras.data });
                 message = "";
               }
             });
@@ -363,28 +371,36 @@ app.get("/veri-girisi/:arg", function (req, res) {
 
 app.post("/veri-girisi/:arg", function (req, res) {
 
-  Firm.find({ firmName: req.params.arg, user: req.user._id }, function (error, firma) {
+  Firm.find({ firmName: req.params.arg, user: req.user._id },function (error, firma) {
     if (error) {
       message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 541834";
       console.log(error);
       res.render("veri-girisi", { name: req.user.name });
     }
     else {
-      const localData = new KvkkData({
+      const localData =  new KvkkData({
         firm: firma[0]._id,
         data: req.body.veriler["veri"] || []
       });
       localData.save();
 
+      FavoriData.findOne({firm:firma[0]._id},function(error,data){
+        if(error){console.log(error)}
+        else{
+          data.data = req.body.veriler["favori"] || [];
+          data.save();
+        }
+      });
+      
 
-      FavoriData.updateOne({ firm: firma[0]._id }, { data: req.body.veriler["favori"] || [] }, function (error, result) {
-        if (error) { console.log("favori", error) }
-        console.log("favori", result);
+       ExtraData.findOne({firm:firma[0]._id},function(error,data){
+        if(error){console.log(error)}
+        else{
+          data.data = req.body.veriler["added"] || [];
+          data.save();
+        }
       });
-      ExtraData.updateOne({ firm: firma[0]._id }, { data: req.body.veriler["added"] || [] }, function (error, result) {
-        if (error) { console.log("extra", error) }
-        console.log("extra", result);
-      });
+
       res.redirect("/veri-girisi-son");
     }
   });
@@ -404,9 +420,15 @@ app.get("/veri-girisi/:arg/arrange", function (req, res) {
             FavoriData.find({ firm: firma[0]._id }, function (error, favoris) {
               if (error) { console.log(error); }
               else {
-                console.log(dataArrange);
-                res.render("veri-girisi-arrange", { name: req.user.name, message: message, data: veriGirisiData, favoris: favoris[0].data, extras: extras[0].data, chosenData: dataArrange, firmName: req.params.arg });
-                message = "";
+                KvkkData.findOne({_id:arrangedDataId},function(error,kvkk){
+                  if (error) { console.log(error); }
+                  else
+                  {
+                    res.render("veri-girisi-arrange",{ name: req.user.name, message: message, data: veriGirisiData, favoris: favoris[0].data, extras: extras[0].data, chosenData: kvkk.data, firmName: req.params.arg });
+                    message = "";
+                  }
+                });
+                
               }
             });
           }
@@ -420,34 +442,41 @@ app.get("/veri-girisi/:arg/arrange", function (req, res) {
   }
 });
 
-app.post("/veri-girisi/:arg/arrange", function (req, res) {
-  Firm.find({ firmName: req.params.arg, user: req.user._id }, function (error, firma) {
+app.post("/veri-girisi/:arg/arrange",function (req, res) {
+  Firm.find({ firmName: req.params.arg, user: req.user._id },function (error, firma) {
     if (error) {
       message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 541114";
       console.log(error);
       res.render("veri-girisi", { name: req.user.name });
     }
     else {
-      KvkkData.updateOne({ _id: arrangedDataId }, { data:req.body.veriler["veri"] }, function (error, result) {
-        if (error) { console.log(error) }
-        else {
-          FavoriData.updateOne({ firm: firma[0]._id }, { data: req.body.veriler["favori"] || [] }, function (error, result) {
-            if (error) { console.log("favori", error) }
-            else {
-              ExtraData.updateOne({ firm: firma[0]._id }, { data: req.body.veriler["added"] || [] }, function (error, result) {
-                if (error) { console.log("extra", error) }
-                else {
-                  message = "Veri başarıyla güncellendi.";
-                  res.redirect("/veri-envanteri/" + req.params.arg);
-                  message = "";
-                }
-              });
-            }
-          });
+      KvkkData.findOne({_id:arrangedDataId},function(error,data){
+        if(error){console.log(erorr)}
+        else{
+          data["data"]=req.body.veriler["veri"];
+          data.save();
         }
-
-
       });
+      FavoriData.findOne({firm:firma[0]._id},function(error,data){
+        if(error){console.log(error)}
+        else{
+          
+          data.data = req.body.veriler["favori"] || [];
+          data.save();
+        }
+      });
+      
+       ExtraData.findOne({firm:firma[0]._id},function(error,data){
+        if(error){console.log(error)}
+        else{
+          data.data = req.body.veriler["added"] || [];
+          data.save();
+        }
+      });
+
+      message = "Veri başarıyla güncellendi.";
+      res.redirect("/veri-envanteri/" + req.params.arg);
+      message = "";
     }
   });
 
@@ -526,7 +555,7 @@ app.get("/veri-envanteri/:arg", function (req, res) {
 
       }
       else {
-        KvkkData.find({ firm: data[0]._id }, 'data -_id', function (error, kvkk) {
+        KvkkData.find({ firm: data[0]._id }, function (error, kvkk) {
           if (error) {
             console.log(error);
             message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 797418";
@@ -613,14 +642,14 @@ app.post("/veri-envanteri/:arg", function (req, res) {
       }
       else {
 
-        KvkkData.find({ firm: firma[0]._id }, "data", function (error, data) {
+        KvkkData.find({ firm: firma[0]._id },function (error, data) {
           if (error) {
             console.log(error);
             message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 929431";
             res.redirect("/veri-envanteri" + req.params.arg);
           }
           else {
-            dataArrange = data[id]["data"];
+            
             arrangedDataId = data[id]._id;
             res.redirect("/veri-girisi/" + req.params.arg + "/arrange");
 
