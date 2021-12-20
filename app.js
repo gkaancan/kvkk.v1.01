@@ -50,7 +50,7 @@ app.use(passport.session());
 
 
 
-mongoose.connect("mongodb+srv://kaanadmin:93589d568380459E@kvkkbeta.26dva.mongodb.net/KVKK?retryWrites=true&w=majority");
+mongoose.connect(process.env.DATABASE_LINK);
 
 
 const dataSchema = new mongoose.Schema({
