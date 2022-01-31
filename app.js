@@ -379,7 +379,7 @@ app.get("/veri-girisi/:arg", function (req, res) {
       Firm.findOne({ firmName: req.params.arg, user: req.user._id }, function (error, firma) {
         if (error) { console.log(error); }
         else {
-          ExtraData.findOne({ firm: firma._id }, function (error, extras) {
+          ExtraData.findOne({ firm: firma._id}, function (error, extras) {
             if (error) { console.log(error); }
             else {
               FavoriData.findOne({ firm: firma._id }, function (error, favoris) {
@@ -1232,7 +1232,8 @@ app.listen(port, function () {
 
 //verilen kelimenin ilk harflerini büyük harf yapan metod
 function capitalizeFirstLetter(text) {
-  let str = text;
+  let str = text.trim();
+  
 
   //split the above string into an array of strings 
   //whenever a blank space is encountered
