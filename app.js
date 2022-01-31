@@ -43,14 +43,15 @@ const options = {
 
 var URL = process.env.URL
 if (URL == null || URL == "")
-  URL ="http://localhost:3000"; 
+  URL = "http://localhost:3000";
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 
 
-mongoose.connect(process.env.DATABASE_LINK);
+// mongoose.connect(process.env.DATABASE_LINK);
+mongoose.connect("mongodb://localhost:27017/test");
 
 
 const dataSchema = new mongoose.Schema({
@@ -94,28 +95,28 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
     default: false
-}
+  }
 });
 
 userSchema.methods.generateVerificationToken = function () {
   const user = this;
   const verificationToken = jwt.sign(
-      { ID: user._id},
-      process.env.USER_VERIFICATION_TOKEN_SECRET,
-      { expiresIn: "7d" }
+    { ID: user._id },
+    process.env.USER_VERIFICATION_TOKEN_SECRET,
+    { expiresIn: "7d" }
   );
   return verificationToken;
 };
 
-userSchema.plugin(encrypt,{secret:process.env.SECRETT,encryptedFields:['name','verified']});
-dataSchema.plugin(encrypt,{secret:process.env.SECRETT,encryptedFields:['data']});
+userSchema.plugin(encrypt, { secret: process.env.SECRETT, encryptedFields: ['name', 'verified'] });
+dataSchema.plugin(encrypt, { secret: process.env.SECRETT, encryptedFields: ['data'] });
 
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
   auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD,
+    user: process.env.EMAIL_USERNAME,
+    pass: process.env.EMAIL_PASSWORD,
   },
 });
 
@@ -226,473 +227,579 @@ const veriGirisiData = [
 ];
 
 app.get("/", function (req, res) {
-  if (req.isAuthenticated())
-    res.render("home", { isAuthenticated: req.isAuthenticated(), name: req.user.name });
-  else
-    res.render("home", { isAuthenticated: req.isAuthenticated() });
-  message = "";
+  try {
+    if (req.isAuthenticated())
+      res.render("home", { isAuthenticated: req.isAuthenticated(), name: req.user.name, message: message });
+    else
+      res.render("home", { isAuthenticated: req.isAuthenticated(), message: message });
+    message = "";
+  }
 
-
+  catch {
+    console.log("Bir hata meydana geldi.\n Hata kodu:1");
+    message = "";
+  }
 });
 
 app.get("/veri-girisi-firm", function (req, res) {
-  var localFirmNames = [];
-  if (req.isAuthenticated()) {
-    Firm.find({ user: req.user._id }).exec(function (error, firms) {
-      if (error) {
-        message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 871318";
-        console.log(error);
-        res.render("veri-girisi-firm", { firms: localFirmNames, name: req.user.name, message: message });
-        message = "";
-      }
-      else {
-        for (let i = 0; i < firms.length; i++) {
-          localFirmNames.push(firms[i]["firmName"]);
+  try {
+    var localFirmNames = [];
+    if (req.isAuthenticated()) {
+      Firm.find({ user: req.user._id }).exec(function (error, firms) {
+        if (error) {
+          message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 871318";
+          console.log(error);
+          res.render("veri-girisi-firm", { firms: localFirmNames, name: req.user.name, message: message });
+          message = "";
         }
+        else {
+          for (let i = 0; i < firms.length; i++) {
+            localFirmNames.push(firms[i]["firmName"]);
+          }
 
-        res.render("veri-girisi-firm", { firms: localFirmNames, name: req.user.name, message: message });
-        message = "";
-      }
-    });
+          res.render("veri-girisi-firm", { firms: localFirmNames, name: req.user.name, message: message });
+          message = "";
+        }
+      });
+    }
+    else {
+      message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+      res.redirect("/login");
+    }
   }
-  else {
-    message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
-    res.redirect("/login");
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:2");
+    res.redirect("/")
   }
 });
 
 app.post("/veri-girisi-firm", function (req, res) {
-  var address = "veri-girisi";
-  if (req.body.add)
-    address = address + "-firm/add";
-  if (req.body.contiune) {
-    address = address + "/" + req.body.firms;
+  try {
+    var address = "veri-girisi";
+    if (req.body.add)
+      address = address + "-firm/add";
+    if (req.body.contiune) {
+      address = address + "/" + req.body.firms;
+    }
+
+    res.redirect(address);
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:3");
+    res.redirect("/")
   }
 
-  res.redirect(address);
 
 });
 
 app.get("/veri-girisi-firm/add", function (req, res) {
-  if (req.isAuthenticated()) {
-    res.render("veri-girisi-add", { message: message, name: req.user.name });
+  try {
+    if (req.isAuthenticated()) {
+      res.render("veri-girisi-add", { message: message, name: req.user.name });
+      message = "";
+    }
+    else {
+      message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+      res.redirect("/login");
+    }
     message = "";
   }
-  else {
-    message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
-    res.redirect("/login");
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:4");
+    res.redirect("/")
   }
-  message = "";
+
 });
 
 app.post("/veri-girisi-firm/add", function (req, res) {
+  try {
+    Firm.exists({ user: req.user._id, firmName: capitalizeFirstLetter(req.body.newFirm) }, function (error, data) {
+      if (error) {
+        message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 487951";
+        console.log(error);
+        res.render("veri-girisi-firm/add", { firms: localFirmNames, name: req.user.name, message: message });
+        message = "";
+      }
 
-  Firm.exists({ user: req.user._id, firmName: capitalizeFirstLetter(req.body.newFirm) }, function (error, data) {
-    if (error) {
-      message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 487951";
-      console.log(error);
-      res.render("veri-girisi-firm/add", { firms: localFirmNames, name: req.user.name, message: message });
-      message = "";
-    }
+      if (data) {
+        message = "'" + req.body.newFirm + "' zaten ekli !";
+        res.redirect("/veri-girisi-firm/add");
+      }
 
-    if (data) {
-      message = "'" + req.body.newFirm + "' zaten ekli !";
-      res.redirect("/veri-girisi-firm/add");
-    }
-
-    else {
-      const newFirm = new Firm({
-        user: req.user._id,
-        firmName: capitalizeFirstLetter(req.body.newFirm)
-      });
-      newFirm.save(function (error) {
-        if (error) {
-          message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 871318";
-          console.log(error);
-          res.render("veri-girisi-firm/add", { firms: localFirmNames, name: req.user.name, message: message });
-          message = "";
-        }
-        else {
-          message = "Firma başarıyla eklendi";
-          const localFavorities = new FavoriData({
-            firm: newFirm._id,
-            data: dataSchema.data
-          });
-          localFavorities.save();
-
-
-          const localExtras = new ExtraData({
-            firm: newFirm._id,
-            data: dataSchema.data
-          });
-          localExtras.save();
-
-          res.redirect("/veri-girisi-firm");
-
-        }
-      });
+      else {
+        const newFirm = new Firm({
+          user: req.user._id,
+          firmName: capitalizeFirstLetter(req.body.newFirm)
+        });
+        newFirm.save(function (error) {
+          if (error) {
+            message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 871318";
+            console.log(error);
+            res.render("veri-girisi-firm/add", { firms: localFirmNames, name: req.user.name, message: message });
+            message = "";
+          }
+          else {
+            message = "Firma başarıyla eklendi";
+            const localFavorities = new FavoriData({
+              firm: newFirm._id,
+              data: dataSchema.data
+            });
+            localFavorities.save();
 
 
-    }
-  });
+            const localExtras = new ExtraData({
+              firm: newFirm._id,
+              data: dataSchema.data
+            });
+            localExtras.save();
+
+            res.redirect("/veri-girisi-firm");
+
+          }
+        });
+
+
+      }
+    });
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:5");
+    res.redirect("/")
+  }
+
+
 
 
 
 });
 
 app.get("/veri-girisi/:arg", function (req, res) {
-  if (req.isAuthenticated()) {
-    Firm.findOne({ firmName: req.params.arg, user: req.user._id }, function (error, firma) {
-      if (error) { console.log(error); }
-      else {
-         ExtraData.findOne({ firm: firma._id }, function (error, extras) {
-          if (error) { console.log(error); }
-          else {
-            FavoriData.findOne({ firm: firma._id }, function (error, favoris) {
-              if (error) { console.log(error); }
-              else {
-                console.log(favoris.data);
-                // console.log(extras);
-                res.render("veri-girisi", { name: req.user.name, message: message, data: veriGirisiData, favoris: favoris.data, extras: extras.data });
-                message = "";
-              }
-            });
-          }
-        });
+  try {
+    if (req.isAuthenticated()) {
+      Firm.findOne({ firmName: req.params.arg, user: req.user._id }, function (error, firma) {
+        if (error) { console.log(error); }
+        else {
+          ExtraData.findOne({ firm: firma._id }, function (error, extras) {
+            if (error) { console.log(error); }
+            else {
+              FavoriData.findOne({ firm: firma._id }, function (error, favoris) {
+                if (error) { console.log(error); }
+                else {
+                  //console.log(favoris.data);
+                  // console.log(extras);
+                  res.render("veri-girisi", { name: req.user.name, message: message, data: veriGirisiData, favoris: favoris.data, extras: extras.data, param: req.params.arg });
+                  message = "";
+                }
+              });
+            }
+          });
 
-      }
-    });
+        }
+      });
+    }
+    else {
+      message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+      res.redirect("/login");
+    }
   }
-  else {
-    message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
-    res.redirect("/login");
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:6");
+    res.redirect("/")
   }
+
 });
 
 app.post("/veri-girisi/:arg", function (req, res) {
+  try {
+    Firm.find({ firmName: req.params.arg, user: req.user._id }, function (error, firma) {
+      if (error) {
+        message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 541834";
+        console.log(error);
+        res.render("veri-girisi", { name: req.user.name });
+      }
+      else {
+        const localData = new KvkkData({
+          firm: firma[0]._id,
+          data: req.body.veriler["veri"] || []
+        });
+        localData.save();
 
-  Firm.find({ firmName: req.params.arg, user: req.user._id },function (error, firma) {
-    if (error) {
-      message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 541834";
-      console.log(error);
-      res.render("veri-girisi", { name: req.user.name });
-    }
-    else {
-      const localData =  new KvkkData({
-        firm: firma[0]._id,
-        data: req.body.veriler["veri"] || []
-      });
-      localData.save();
+        FavoriData.findOne({ firm: firma[0]._id }, function (error, data) {
+          if (error) { console.log(error) }
+          else {
+            data.data = req.body.veriler["favori"] || [];
+            data.save();
+          }
+        });
 
-      FavoriData.findOne({firm:firma[0]._id},function(error,data){
-        if(error){console.log(error)}
-        else{
-          data.data = req.body.veriler["favori"] || [];
-          data.save();
-        }
-      });
-      
 
-       ExtraData.findOne({firm:firma[0]._id},function(error,data){
-        if(error){console.log(error)}
-        else{
-          data.data = req.body.veriler["added"] || [];
-          data.save();
-        }
-      });
+        ExtraData.findOne({ firm: firma[0]._id }, function (error, data) {
+          if (error) { console.log(error) }
+          else {
+            data.data = req.body.veriler["added"] || [];
+            data.save();
+          }
+        });
 
-      res.redirect("/veri-girisi-son");
-    }
-  });
+        res.redirect("/veri-girisi-son");
+      }
+    });
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:7");
+    res.redirect("/")
+  }
+
+
 
 
 
 });
 
 app.get("/veri-girisi/:arg/arrange", function (req, res) {
-  if (req.isAuthenticated()) {
+  try {
+    if (req.isAuthenticated()) {
+      Firm.find({ firmName: req.params.arg, user: req.user._id }, function (error, firma) {
+        if (error) { console.log(error); }
+        else {
+          ExtraData.find({ firm: firma[0]._id }, function (error, extras) {
+            if (error) { console.log(error); }
+            else {
+              FavoriData.find({ firm: firma[0]._id }, function (error, favoris) {
+                if (error) { console.log(error); }
+                else {
+                  KvkkData.findOne({ _id: arrangedDataId }, function (error, kvkk) {
+                    if (error) { console.log(error); }
+                    else {
+                      res.render("veri-girisi-arrange", { name: req.user.name, message: message, data: veriGirisiData, favoris: favoris[0].data, extras: extras[0].data, chosenData: kvkk.data, firmName: req.params.arg });
+                      message = "";
+                    }
+                  });
+
+                }
+              });
+            }
+          });
+        }
+      });
+    }
+    else {
+      message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+      res.redirect("/login");
+    }
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:8");
+    res.redirect("/")
+  }
+
+});
+
+app.post("/veri-girisi/:arg/arrange", function (req, res) {
+  try {
     Firm.find({ firmName: req.params.arg, user: req.user._id }, function (error, firma) {
-      if (error) { console.log(error); }
+      if (error) {
+        message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 541114";
+        console.log(error);
+        res.render("veri-girisi", { name: req.user.name });
+      }
       else {
-        ExtraData.find({ firm: firma[0]._id }, function (error, extras) {
-          if (error) { console.log(error); }
+        KvkkData.findOne({ _id: arrangedDataId }, function (error, data) {
+          if (error) { console.log(error) }
           else {
-            FavoriData.find({ firm: firma[0]._id }, function (error, favoris) {
-              if (error) { console.log(error); }
-              else {
-                KvkkData.findOne({_id:arrangedDataId},function(error,kvkk){
-                  if (error) { console.log(error); }
-                  else
-                  {
-                    res.render("veri-girisi-arrange",{ name: req.user.name, message: message, data: veriGirisiData, favoris: favoris[0].data, extras: extras[0].data, chosenData: kvkk.data, firmName: req.params.arg });
-                    message = "";
-                  }
-                });
-                
-              }
-            });
+            data["data"] = req.body.veriler["veri"];
+            data.save();
           }
         });
+        FavoriData.findOne({ firm: firma[0]._id }, function (error, data) {
+          if (error) { console.log(error) }
+          else {
+
+            data.data = req.body.veriler["favori"] || [];
+            data.save();
+          }
+        });
+
+        ExtraData.findOne({ firm: firma[0]._id }, function (error, data) {
+          if (error) { console.log(error) }
+          else {
+            data.data = req.body.veriler["added"] || [];
+            data.save();
+          }
+        });
+
+        message = "Veri başarıyla güncellendi.";
+        res.redirect("/veri-envanteri/" + req.params.arg);
+        message = "";
       }
     });
   }
-  else {
-    message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
-    res.redirect("/login");
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:8");
+    res.redirect("/")
   }
-});
-
-app.post("/veri-girisi/:arg/arrange",function (req, res) {
-  Firm.find({ firmName: req.params.arg, user: req.user._id },function (error, firma) {
-    if (error) {
-      message = "Bir hata meydana geldi. Lütfen bu hatayı bize bildirin. Hata kodu: 541114";
-      console.log(error);
-      res.render("veri-girisi", { name: req.user.name });
-    }
-    else {
-      KvkkData.findOne({_id:arrangedDataId},function(error,data){
-        if(error){console.log(erorr)}
-        else{
-          data["data"]=req.body.veriler["veri"];
-          data.save();
-        }
-      });
-      FavoriData.findOne({firm:firma[0]._id},function(error,data){
-        if(error){console.log(error)}
-        else{
-          
-          data.data = req.body.veriler["favori"] || [];
-          data.save();
-        }
-      });
-      
-       ExtraData.findOne({firm:firma[0]._id},function(error,data){
-        if(error){console.log(error)}
-        else{
-          data.data = req.body.veriler["added"] || [];
-          data.save();
-        }
-      });
-
-      message = "Veri başarıyla güncellendi.";
-      res.redirect("/veri-envanteri/" + req.params.arg);
-      message = "";
-    }
-  });
 
 });
 
 app.get("/veri-girisi-son", function (req, res) {
-  if (req.isAuthenticated()) {
-    res.render("veri-girisi-son", { name: req.user.name, message: message });
-    message = "";
+  try {
+    if (req.isAuthenticated()) {
+      res.render("veri-girisi-son", { name: req.user.name, message: message });
+      message = "";
+    }
+    else {
+      message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+      res.redirect("/login");
+    }
   }
-  else {
-    message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
-    res.redirect("/login");
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:9");
+    res.redirect("/")
   }
+
 });
 
 app.post("/veri-girisi-son", function (req, res) {
-  if (req.body.addNewData)
-    res.redirect("/veri-girisi-firm");
-  else if (req.body.dataInventory)
-    res.redirect("/veri-envanteri");
-  else if (req.body.mainMenu)
-    res.redirect("/");
+  try {
+    if (req.body.addNewData)
+      res.redirect("/veri-girisi-firm");
+    else if (req.body.dataInventory)
+      res.redirect("/veri-envanteri");
+    else if (req.body.mainMenu)
+      res.redirect("/");
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:10");
+    res.redirect("/")
+  }
+
 });
 
 app.get("/veri-envanteri", function (req, res) {
-
-  if (req.isAuthenticated()) {
-    Firm.find({ user: req.user._id }, function (err, data) {
-      if (err) {
-        console.log("error", err);
-        message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 186331";
-        res.redirect("/");
-      }
-      else {
-        var localFirmNames = [];
-        for (let i = 0; i < data.length; i++) {
-          localFirmNames.push(data[i].firmName);
+  try {
+    if (req.isAuthenticated()) {
+      Firm.find({ user: req.user._id }, function (err, data) {
+        if (err) {
+          console.log("error", err);
+          message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 186331";
+          res.redirect("/");
         }
-        res.render("veri-envanteri", { firms: localFirmNames, message: message, name: req.user.name });
-        message = "";
-      }
-    })
+        else {
+          var localFirmNames = [];
+          for (let i = 0; i < data.length; i++) {
+            localFirmNames.push(data[i].firmName);
+          }
+          res.render("veri-envanteri", { firms: localFirmNames, message: message, name: req.user.name });
+          message = "";
+        }
+      })
+    }
+    else {
+      message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+      res.redirect("/login");
+    }
   }
-  else {
-    message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
-    res.redirect("/login");
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:12");
+    res.redirect("/")
   }
+
+
 });
 
 app.post("/veri-envanteri", function (req, res) {
+  try {
+    let address = "/veri-envanteri/" + req.body.firm;
+    res.redirect(address);
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:13");
+    res.redirect("/")
+  }
 
-  let address = "/veri-envanteri/" + req.body.firm;
-  res.redirect(address);
+
 });
 
 app.get("/veri-envanteri/:arg", function (req, res) {
-  if (req.isAuthenticated()) {
-    var firmNames = [];
-    Firm.find({ user: req.user._id }, function (error, data) {
-      if (error) {
-        console.log(error);
-        message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 475452";
-        res.redirect("/");
-      }
-      else {
-        for (let i = 0; i < data.length; i++)
-          firmNames.push(data[i].firmName);
-      }
-    });
-    Firm.find({ user: req.user._id, firmName: req.params.arg }, function (error, data) {
-      if (error) {
-        console.log(error);
-        message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 178312";
-        res.redirect("/");
+  try {
+    if (req.isAuthenticated()) {
+      var firmNames = [];
+      Firm.find({ user: req.user._id }, function (error, data) {
+        if (error) {
+          console.log(error);
+          message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 475452";
+          res.redirect("/");
+        }
+        else {
+          for (let i = 0; i < data.length; i++)
+            firmNames.push(data[i].firmName);
+        }
+      });
+      Firm.find({ user: req.user._id, firmName: req.params.arg }, function (error, data) {
+        if (error) {
+          console.log(error);
+          message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 178312";
+          res.redirect("/");
 
-      }
-      else {
-        KvkkData.find({ firm: data[0]._id }, function (error, kvkk) {
-          if (error) {
-            console.log(error);
-            message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 797418";
-            res.redirect("/");
-          }
-          else {
-            res.render("veri-envanteri-datalarla", { firms: firmNames, param: req.params.arg, localData: kvkk, message: message, name: req.user.name });
-          }
-        });
-      }
-    });
-
+        }
+        else {
+          KvkkData.find({ firm: data[0]._id }, function (error, kvkk) {
+            if (error) {
+              console.log(error);
+              message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 797418";
+              res.redirect("/");
+            }
+            else {
+              res.render("veri-envanteri-datalarla", { firms: firmNames, param: req.params.arg, localData: kvkk, message: message, name: req.user.name });
+            }
+          });
+        }
+      });
+    }
   }
-
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:15");
+    res.redirect("/")
+  }
 
 });
 
 
 app.post("/veri-envanteri/:arg", function (req, res) {
+  try {
+    if (req.body.choosefirm)
+      res.redirect("/veri-envanteri/" + req.body.choosefirm);
+    if (req.body.deleteRowButton) {
+      const id = req.body.deleteRowButton - 1;
+      Firm.find({ user: req.user._id, firmName: req.params.arg }, function (error, firma) {
+        if (error) {
 
-  if (req.body.choosefirm)
-    res.redirect("/veri-envanteri/" + req.body.choosefirm);
-  if (req.body.deleteRowButton) {
-    const id = req.body.deleteRowButton - 1;
-    Firm.find({ user: req.user._id, firmName: req.params.arg }, function (error, firma) {
-      if (error) {
+          console.log(error);
+          message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 186331";
+          res.redirect("/veri-envanteri" + req.params.arg);
+        }
+        else {
 
-        console.log(error);
-        message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 186331";
-        res.redirect("/veri-envanteri" + req.params.arg);
-      }
-      else {
+          KvkkData.find({ firm: firma[0]._id }, function (error, data) {
+            if (error) {
+              console.log(error);
+              message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 929431";
+              res.redirect("/veri-envanteri" + req.params.arg);
+            }
+            else {
 
-        KvkkData.find({ firm: firma[0]._id }, function (error, data) {
-          if (error) {
-            console.log(error);
-            message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 929431";
-            res.redirect("/veri-envanteri" + req.params.arg);
-          }
-          else {
+              KvkkData.deleteOne({ _id: data[id]._id }, function (error, result) {
+                if (error) {
+                  console.log(error);
+                  message = "Veri silinirken bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 741372";
+                  res.redirect("/veri-envanteri" + req.params.arg);
+                }
+                else {
+                  message = "Veri başarıyla silindi";
+                  res.redirect("/veri-envanteri/" + req.params.arg);
+                }
+              });
+            }
+          });
+        }
+      });
+    }
 
-            KvkkData.deleteOne({ _id: data[id]._id }, function (error, result) {
-              if (error) {
-                console.log(error);
-                message = "Veri silinirken bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 741372";
-                res.redirect("/veri-envanteri" + req.params.arg);
-              }
-              else {
-                message = "Veri başarıyla silindi";
-                res.redirect("/veri-envanteri/" + req.params.arg);
-              }
-            });
-          }
-        });
-      }
-    });
+    if (req.body.deleteFirm) {
+      Firm.find({ user: req.user._id, firmName: req.params.arg }, async function (error, firma) {
+        if (error) {
+          console.log(error);
+          message = "Firma silinirken bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 143159";
+          res.redirect("/veri-envanteri");
+        }
+        else {
+          await KvkkData.deleteMany({ firm: firma._id }).exec();
+          await FavoriData.deleteMany({ firm: firma._id }).exec();
+          await ExtraData.deleteMany({ firm: firma._id }).exec();
+          await Firm.deleteOne({ user: req.user._id, firmName: req.params.arg }).exec();
+          message = "Firma başarıyla silindi";
+          res.redirect("/veri-envanteri");
+        }
+      });
+    }
+    if (req.body.arrangeRowButton) {
+      const id = req.body.arrangeRowButton - 1;
+      Firm.find({ user: req.user._id, firmName: req.params.arg }, function (error, firma) {
+        if (error) {
+
+          console.log(error);
+          message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 186331";
+          res.redirect("/veri-envanteri" + req.params.arg);
+        }
+        else {
+
+          KvkkData.find({ firm: firma[0]._id }, function (error, data) {
+            if (error) {
+              console.log(error);
+              message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 929431";
+              res.redirect("/veri-envanteri" + req.params.arg);
+            }
+            else {
+
+              arrangedDataId = data[id]._id;
+              res.redirect("/veri-girisi/" + req.params.arg + "/arrange");
+
+            }
+          });
+        }
+      });
+    }
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:18");
+    res.redirect("/")
   }
 
-  if (req.body.deleteFirm) {
-    Firm.find({ user: req.user._id, firmName: req.params.arg }, function (error, firma) {
-      if (error) {
-        console.log(error);
-        message = "Firma silinirken bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 143159";
-        res.redirect("/veri-envanteri");
-      }
-      else {
-        KvkkData.deleteMany({ firm: firma._id }).exec();
-        FavoriData.deleteMany({ firm: firma._id }).exec();
-        ExtraData.deleteMany({ firm: firma._id }).exec();
-        Firm.deleteOne({ user: req.user._id, firmName: req.params.arg }).exec();
-        message = "Firma başarıyla silindi";
-        res.redirect("/veri-envanteri");
-      }
-    });
-  }
-  if (req.body.arrangeRowButton) {
-    const id = req.body.arrangeRowButton - 1;
-    Firm.find({ user: req.user._id, firmName: req.params.arg }, function (error, firma) {
-      if (error) {
 
-        console.log(error);
-        message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 186331";
-        res.redirect("/veri-envanteri" + req.params.arg);
-      }
-      else {
-
-        KvkkData.find({ firm: firma[0]._id },function (error, data) {
-          if (error) {
-            console.log(error);
-            message = "Bir hata meydana geldi. Bu hatayı lütfen bize bildirin. Hata kodu: 929431";
-            res.redirect("/veri-envanteri" + req.params.arg);
-          }
-          else {
-            
-            arrangedDataId = data[id]._id;
-            res.redirect("/veri-girisi/" + req.params.arg + "/arrange");
-
-          }
-        });
-      }
-    });
-  }
 });
 
 app.get("/login", function (req, res) {
-  res.render("login", { message: message });
-  message = "";
+  try {
+    res.render("login", { message: message });
+    message = "";
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:1");
+    res.redirect("/")
+  }
+
 });
 
 app.post("/login", async function (req, res) {
+  try {
+    const user = await User.findOne({ username: req.body.username }).exec();
 
-  const user = await User.findOne({username:req.body.username}).exec();
-
-  if (!user) {
-    message = "Kullanıcı adı veya şifre hatalı";
-    return res.redirect("/login");
-
-}
-    // Step 2 - Ensure the account has been verified
-    if(!user.verified){
-      // Step 2 - Generate a verification token with the user's ID
-      const verificationToken = user.generateVerificationToken();
-      
-      // Step 3 - Email the user a unique verification link
-      const url = URL+`/api/verify/${verificationToken}`;
-
-      transporter.sendMail({
-        to: user.username,
-        subject: 'SmartKVKK - Hesabınızı Onaylayın',
-        html: ` Hesabınızı onaylamak için <a href = '${url}'>buraya</a> tıklayın.`
-      });
-      message = "Hesabınız henüz onaylanmamış. Onaylamanız için yeni bir mail gönderildi.";
+    if (!user) {
+      message = "Kullanıcı adı veya şifre hatalı";
       return res.redirect("/login");
-        // return res.status(403).send({ 
-        //       message: "Verify your Account." 
-        // });
+
     }
+    // MAİL SORUNU ÇOZÜLDÜĞÜNDE BURAYLA İLGİLENECEĞİZ
+
+    // Step 2 - Ensure the account has been verified
+    // // // if(!user.verified){
+    // // //   // Step 2 - Generate a verification token with the user's ID
+    // // //   const verificationToken = user.generateVerificationToken();
+
+    // // //   // Step 3 - Email the user a unique verification link
+    // // //   const url = URL+`/api/verify/${verificationToken}`;
+
+    // // //   transporter.sendMail({
+    // // //     to: user.username,
+    // // //     subject: 'SmartKVKK - Hesabınızı Onaylayın',
+    // // //     html: ` Hesabınızı onaylamak için <a href = '${url}'>buraya</a> tıklayın.`
+    // // //   });
+    // // //   message = "Hesabınız henüz onaylanmamış. Onaylamanız için yeni bir mail gönderildi.";
+    // // //   return res.redirect("/login");
+    // // //     // return res.status(403).send({ 
+    // // //     //       message: "Verify your Account." 
+    // // //     // });
+    // // // }
 
     req.login(user, function (error) {
       if (error) {
@@ -703,234 +810,293 @@ app.post("/login", async function (req, res) {
         message = "Kullanıcı adı veya şifre hatalı";
         // ,{failureRedirect: '/login'}
         passport.authenticate("local", { failureRedirect: '/login' })(req, res, function () {
-  
+
           res.redirect("/");
         });
       }
-  });
-});
-
-app.get("/resetpassword",function(req,res){
-  res.render("forget-password",{message:""});
-});
-
-app.post("/resetpassword",async function(req,res){
-const user = await User.findOne({username:req.body.email}).exec();
-if (!user)
-{
-  return res.render("forget-password",{message:"Bu e-maile sahip bir kullanıcı yok"});
-}
-if (!user.verified)
-{
-const verificationToken = user.generateVerificationToken();
-      
-// Step 3 - Email the user a unique verification link
-const url = URL+`/api/reset/${verificationToken}`;
-
-transporter.sendMail({
-  to: user.username,
-  subject: 'SmartKVKK - Hesabınızı Onaylayın',
-  html: ` Hesabınızı onaylamak için <a href = '${url}'>buraya</a> tıklayın.`
-});
-return res.render("forget-password",{message:"Hesabınız henüz onaylanmamış. Onaylamanız için e-mailinize bir onaylama maili gönderildi."});
-}
-else
-{
-  const verificationToken = user.generateVerificationToken();
-      
-  // Step 3 - Email the user a unique verification link
-  const url = URL+`/api/resetpassword/${verificationToken}`;
-
-transporter.sendMail({
-  to: user.username,
-  subject: 'SmartKVKK - Şifre Sıfırlama Talebi',
-  html: ` Şifrenizi sıfırlamak için <a href = '${url}'>buraya</a> tıklayın. <br>
-  Şifre sıfırlama talebinde bulunmadıysanız bu e-maili görmezden gelebilirsiniz.`
-
-});
-
-  res.render("forget-password",{message:"Şifrenizi sıfırlayabilmeniz için gerekli bağlantı mail adresinize gönderildi."});
-}
-
-
-
+    });
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:20");
+    res.redirect("/")
+  }
 
 
 });
 
-app.get("/api/resetpassword/:arg",async function(req,res){
-  const token = req.params.arg;
-   // Check we have an id
-   if (!token) {
-    return res.status(422).send({ 
-         message: "Missing Token" 
-    });}
+app.get("/resetpassword", function (req, res) {
+  try { res.render("forget-password", { message: "" }); }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:21");
+    res.redirect("/")
+  }
 
-    // Step 1 -  Verify the token from the URL
-    let payload = null
-    try {
-        payload = jwt.verify(
-            token,
-            process.env.USER_VERIFICATION_TOKEN_SECRET
-        );
-    } catch (err) {
-        return res.status(500).send(err);
+});
+
+app.post("/resetpassword", async function (req, res) {
+  try {
+    const user = await User.findOne({ username: req.body.email }).exec();
+    if (!user) {
+      return res.render("forget-password", { message: "Bu e-maile sahip bir kullanıcı yok" });
     }
-  
-    try{
-      // Step 2 - Find user with matching ID
-      const user = await User.findOne({ _id: payload.ID }).exec();
-      if (!user) {
-         return res.status(404).send({ 
-            message: "User does not  exists" 
-         });
-      }
-      else
-      {
-        res.render("setPassword",{message:""});
-      }
-   } catch (err) {
-      return res.status(500).send(err);
-   }
-})
-
-app.post("/api/resetpassword/:arg",async function(req,res){
-
-  if (req.body.password1 !== req.body.password2) {
-    
-    res.render("setPassword",{message:"Girdiğiniz şifre, tekrarı ile uyuşmuyor."});
-  }
-  else if (req.body.password1.match(/[a-z]/g) && req.body.password1.match(/[A-Z]/g) && req.body.password1.match(/[0-9]/g) && req.body.password1.length < 8) {
-    message = "Girdiğiniz şifre, belirtilen koşulları sağlamıyor";
-    res.render("setPassword",{message:"Girdiğiniz şifre, tekrarı ile uyuşmuyor."});
-  }
-
-  else{
-    const token = req.params.arg;
-   // Check we have an id
-   if (!token) {
-    return res.status(422).send({ 
-         message: "Missing Token" 
-    });}
-
-    // Step 1 -  Verify the token from the URL
-    let payload = null
-    try {
-        payload = jwt.verify(
-            token,
-            process.env.USER_VERIFICATION_TOKEN_SECRET
-        );
-    } catch (err) {
-        return res.status(500).send(err);
-    }
-      // Step 2 - Find user with matching ID
-      const user = await User.findOne({ _id: payload.ID }).exec();
-
-      user.setPassword(req.body.password1,function(){
-        user.save();
-        return res.render("verify-user",{message:"Şifreniz başarıyla değiştirildi. Lütfen giriş yapın."});
-      });
-  }
-});
-
-app.get("/register", function (req, res) {
-  res.render("register", { message, message });
-  message = "";
-});
-
-app.post("/register", function (req, res) {
-
-  if (req.body.password !== req.body.re_password) {
-    message = "Girdiğiniz şifre, tekrarı ile uyuşmuyor.";
-    res.redirect("/register");
-  }
-  else if (req.body.password.match(/[a-z]/g) && req.body.password.match(/[A-Z]/g) && req.body.password.match(/[0-9]/g) && req.body.password.length < 8) {
-    message = "Girdiğiniz şifre, belirtilen özelliklerde değil.";
-    res.redirect("/register");
-  }
-  else {
-
-    User.register({ username: req.body.username, name: req.body.name }, req.body.password, function (err, user) {
-      if (err) {
-        console.log(err);
-        message = err;
-        res.redirect("/register");
-      }
-      else {
-      // Step 2 - Generate a verification token with the user's ID
+    if (!user.verified) {
       const verificationToken = user.generateVerificationToken();
-      
+
       // Step 3 - Email the user a unique verification link
-      const url = URL+`/api/verify/${verificationToken}`;
+      const url = URL + `/api/reset/${verificationToken}`;
 
       transporter.sendMail({
-        to: req.body.username,
+        to: user.username,
         subject: 'SmartKVKK - Hesabınızı Onaylayın',
         html: ` Hesabınızı onaylamak için <a href = '${url}'>buraya</a> tıklayın.`
       });
+      return res.render("forget-password", { message: "Hesabınız henüz onaylanmamış. Onaylamanız için e-mailinize bir onaylama maili gönderildi." });
+    }
+    else {
+      const verificationToken = user.generateVerificationToken();
 
-      res.render("verify-email",{email:req.body.username});
-      // return res.status(201).send({
-      //   message: `Sent a verification email to ${req.body.username}`
-      // });
+      // Step 3 - Email the user a unique verification link
+      const url = URL + `/api/resetpassword/${verificationToken}`;
 
-      }
-    });
+      transporter.sendMail({
+        to: user.username,
+        subject: 'SmartKVKK - Şifre Sıfırlama Talebi',
+        html: ` Şifrenizi sıfırlamak için <a href = '${url}'>buraya</a> tıklayın. <br>
+  Şifre sıfırlama talebinde bulunmadıysanız bu e-maili görmezden gelebilirsiniz.`
+
+      });
+
+      res.render("forget-password", { message: "Şifrenizi sıfırlayabilmeniz için gerekli bağlantı mail adresinize gönderildi." });
+    }
   }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:22");
+    res.redirect("/")
+  }
+
+
+
+
+
 });
 
-app.get("/api/verify/:arg",async function(req,res){
-  const token = req.params.arg;
-   // Check we have an id
-   if (!token) {
-    return res.status(422).send({ 
-         message: "Missing Token" 
-    });}
+app.get("/api/resetpassword/:arg", async function (req, res) {
+  try {
+    const token = req.params.arg;
+    // Check we have an id
+    if (!token) {
+      return res.status(422).send({
+        message: "Missing Token"
+      });
+    }
 
     // Step 1 -  Verify the token from the URL
     let payload = null
     try {
-        payload = jwt.verify(
-            token,
-            process.env.USER_VERIFICATION_TOKEN_SECRET
-        );
+      payload = jwt.verify(
+        token,
+        process.env.USER_VERIFICATION_TOKEN_SECRET
+      );
     } catch (err) {
-        return res.status(500).send(err);
+      return res.status(500).send(err);
     }
-  
-    try{
+
+    try {
       // Step 2 - Find user with matching ID
       const user = await User.findOne({ _id: payload.ID }).exec();
       if (!user) {
-         return res.status(404).send({ 
-            message: "User does not  exists" 
-         });
+        return res.status(404).send({
+          message: "User does not  exists"
+        });
+      }
+      else {
+        res.render("setPassword", { message: "" });
+      }
+    } catch (err) {
+      return res.status(500).send(err);
+    }
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:23");
+    res.redirect("/")
+  }
+
+});
+
+app.post("/api/resetpassword/:arg", async function (req, res) {
+  try {
+    if (req.body.password1 !== req.body.password2) {
+
+      res.render("setPassword", { message: "Girdiğiniz şifre, tekrarı ile uyuşmuyor." });
+    }
+    else if (req.body.password1.match(/[a-z]/g) && req.body.password1.match(/[A-Z]/g) && req.body.password1.match(/[0-9]/g) && req.body.password1.length < 8) {
+      message = "Girdiğiniz şifre, belirtilen koşulları sağlamıyor";
+      res.render("setPassword", { message: "Girdiğiniz şifre, tekrarı ile uyuşmuyor." });
+    }
+
+    else {
+      const token = req.params.arg;
+      // Check we have an id
+      if (!token) {
+        return res.status(422).send({
+          message: "Missing Token"
+        });
+      }
+
+      // Step 1 -  Verify the token from the URL
+      let payload = null
+      try {
+        payload = jwt.verify(
+          token,
+          process.env.USER_VERIFICATION_TOKEN_SECRET
+        );
+      } catch (err) {
+        return res.status(500).send(err);
+      }
+      // Step 2 - Find user with matching ID
+      const user = await User.findOne({ _id: payload.ID }).exec();
+
+      user.setPassword(req.body.password1, function () {
+        user.save();
+        return res.render("verify-user", { message: "Şifreniz başarıyla değiştirildi. Lütfen giriş yapın." });
+      });
+    }
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:24");
+    res.redirect("/")
+  }
+
+
+});
+
+app.get("/register", function (req, res) {
+  try {
+    res.render("register", { message, message });
+    message = "";
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:25");
+    res.redirect("/")
+  }
+
+});
+
+app.post("/register", function (req, res) {
+  try {
+    if (req.body.password !== req.body.re_password) {
+      message = "Girdiğiniz şifre, tekrarı ile uyuşmuyor.";
+      res.redirect("/register");
+    }
+    else if (req.body.password.match(/[a-z]/g) && req.body.password.match(/[A-Z]/g) && req.body.password.match(/[0-9]/g) && req.body.password.length < 8) {
+      message = "Girdiğiniz şifre, belirtilen özelliklerde değil.";
+      res.redirect("/register");
+    }
+    else {
+
+      User.register({ username: req.body.username, name: req.body.name }, req.body.password, async function (err, user) {
+        if (err) {
+          console.log(err);
+          message = err;
+          res.redirect("/register");
+        }
+        else {
+
+          user.verified = true;
+          await user.save();
+          res.render("verify-user", { message: "Hesabınız başarıyla onaylandı. Lütfen giriş yapın" });
+
+
+          //MAİL SORUNU
+
+          // // // // Step 2 - Generate a verification token with the user's ID
+          // // // const verificationToken = user.generateVerificationToken();
+
+          // // // // Step 3 - Email the user a unique verification link
+          // // // const url = URL+`/api/verify/${verificationToken}`;
+
+          // // // transporter.sendMail({
+          // // //   to: req.body.username,
+          // // //   subject: 'SmartKVKK - Hesabınızı Onaylayın',
+          // // //   html: ` Hesabınızı onaylamak için <a href = '${url}'>buraya</a> tıklayın.`
+          // // // });
+
+          // // // res.render("verify-email",{email:req.body.username});
+          // // // // return res.status(201).send({
+          // // // //   message: `Sent a verification email to ${req.body.username}`
+          // // // // });
+
+        }
+      });
+    }
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:26");
+    res.redirect("/")
+  }
+
+
+});
+
+app.get("/api/verify/:arg", async function (req, res) {
+  try {
+    const token = req.params.arg;
+    // Check we have an id
+    if (!token) {
+      return res.status(422).send({
+        message: "Missing Token"
+      });
+    }
+
+    // Step 1 -  Verify the token from the URL
+    let payload = null
+    try {
+      payload = jwt.verify(
+        token,
+        process.env.USER_VERIFICATION_TOKEN_SECRET
+      );
+    } catch (err) {
+      return res.status(500).send(err);
+    }
+
+    try {
+      // Step 2 - Find user with matching ID
+      const user = await User.findOne({ _id: payload.ID }).exec();
+      if (!user) {
+        return res.status(404).send({
+          message: "User does not  exists"
+        });
       }
       // Step 3 - Update user verification status to true
       user.verified = true;
       await user.save();
-      res.render("verify-user",{message:"Hesabınız başarıyla onaylandı. Lütfen giriş yapın"});
+      res.render("verify-user", { message: "Hesabınız başarıyla onaylandı. Lütfen giriş yapın" });
 
-   } catch (err) {
+    } catch (err) {
       return res.status(500).send(err);
-   }
+    }
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:27");
+    res.redirect("/")
+  }
+
 
 });
 
-app.get("/api/resend/verify/:arg",async function(req,res){
-  const user = await User.findOne({userName:req.params.arg}).exec();
-  if(!user)
-  {
-    return res.render("verify-user",{message:"Böyle bir kullanıcı kayıtlı değil"});
-  }
+app.get("/api/resend/verify/:arg", async function (req, res) {
+  try {
+    const user = await User.findOne({ userName: req.params.arg }).exec();
+    if (!user) {
+      return res.render("verify-user", { message: "Böyle bir kullanıcı kayıtlı değil" });
+    }
 
-  if(!user.verified)
-  {
+    if (!user.verified) {
       // Step 2 - Generate a verification token with the user's ID
       const verificationToken = user.generateVerificationToken();
 
       // Step 3 - Email the user a unique verification link
-      const url = URL+`/api/verify/${verificationToken}`;
+      const url = URL + `/api/verify/${verificationToken}`;
 
       transporter.sendMail({
         to: req.params.arg,
@@ -938,12 +1104,17 @@ app.get("/api/resend/verify/:arg",async function(req,res){
         html: ` Hesabınızı onaylamak için <a href = '${url}'>buraya</a> tıklayın.`
       });
 
-      return res.render("verify-email",{email:req.body.username});
+      return res.render("verify-email", { email: req.body.username });
+    }
+    else {
+      return res.render("verify-user", { message: "Bu hesap zaten onaylanmış" });
+    }
   }
-  else
-  {
-    return res.render("verify-user",{message:"Bu hesap zaten onaylanmış"});
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:29");
+    res.redirect("/")
   }
+
 
 });
 
@@ -953,28 +1124,34 @@ app.get("/logout", function (req, res) {
 });
 
 app.get("/documents", function (req, res) {
-  message = "";
-  if (!req.isAuthenticated()) {
-    message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
-    res.redirect("/login");
-  }
-  else {
-    fs.readdir(documentsPath, (err, files) => {
-      if (err)
-        console.log(err);
-      else {
-        var filesArray = [];
-        for (let i = 0; i < files.length; i++) {
-          filesArray.push({
-            filesName: files[i].slice(11, -4),
-            filesDate: files[i].slice(0, 10)
-          });
+  try {
+    message = "";
+    if (!req.isAuthenticated()) {
+      message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+      res.redirect("/login");
+    }
+    else {
+      fs.readdir(documentsPath, (err, files) => {
+        if (err)
+          console.log(err);
+        else {
+          var filesArray = [];
+          for (let i = 0; i < files.length; i++) {
+            filesArray.push({
+              filesName: files[i].slice(11, -4),
+              filesDate: files[i].slice(0, 10)
+            });
+          }
+          res.render("dökümanlar", { filesArray: filesArray, name: req.user.name });
         }
-        res.render("dökümanlar", { filesArray: filesArray, name: req.user.name });
-      }
 
-    });
+      });
 
+    }
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:30");
+    res.redirect("/")
   }
 
 });
@@ -984,21 +1161,59 @@ app.post("/documents", function (req, res) {
 });
 
 app.get("/documents/:arg", function (req, res) {
-  if (req.isAuthenticated()) {
-    const path = req.params.arg + ".pdf";
-    const pdfString = "<object data='/Dökümanlar/pdf/" + path + "' type='application/pdf' width='100%' height='100%'></object>";
-    const buttonString = " <button type='button' id='downloadPdf' class='btn btn-outline-danger'onclick='downloadDocument(" + '"' + path + '"' + "," + '"' + 'pdf' + '"' + ")'>PDF Belgesi Olarak İndir</button> " +
-      "<button type='button' class='btn btn-outline-primary' id='downloadWord'onclick='downloadDocument(" + '"' + path + '"' + "," + '"' + 'word' + '"' + ")'>Word Belgesi Olarak İndir</button>"
-    res.render("döküman", { document: req.params.arg, pdfString: pdfString, buttonString: buttonString, name: req.user.name });
-  }
-  else {
-    {
-      message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
-      res.redirect("/login");
+  try {
+    if (req.isAuthenticated()) {
+      const path = req.params.arg + ".pdf";
+      const pdfString = "<object data='/Dökümanlar/pdf/" + path + "' type='application/pdf' width='100%' height='100%'></object>";
+      const buttonString = " <button type='button' id='downloadPdf' class='btn btn-outline-danger'onclick='downloadDocument(" + '"' + path + '"' + "," + '"' + 'pdf' + '"' + ")'>PDF Belgesi Olarak İndir</button> " +
+        "<button type='button' class='btn btn-outline-primary' id='downloadWord'onclick='downloadDocument(" + '"' + path + '"' + "," + '"' + 'word' + '"' + ")'>Word Belgesi Olarak İndir</button>"
+      res.render("döküman", { document: req.params.arg, pdfString: pdfString, buttonString: buttonString, name: req.user.name });
+    }
+    else {
+      {
+        message = "Bu sayfayı sadece kayıtlı kullanıcılar görüntüleyebilir.";
+        res.redirect("/login");
+      }
     }
   }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:31");
+    res.redirect("/")
+  }
+
 });
 
+app.post("/veri-girisi-test/:arg", async function (req, res) {
+  try {
+    const firm = await Firm.findOne({ firmName: req.params.arg, user: req.user._id }).exec();
+    const firmId = firm._id;
+    const randomTestData = new KvkkData({
+      firm: firmId,
+      data: {
+        departman: [veriGirisiData[0][Math.floor(Math.random() * veriGirisiData[0].length)]],
+        surec: [veriGirisiData[1][Math.floor(Math.random() * veriGirisiData[1].length)]],
+        veriKategorisi: [veriGirisiData[2][Math.floor(Math.random() * veriGirisiData[2].length)]],
+        kisiselVeri: [veriGirisiData[3][Math.floor(Math.random() * veriGirisiData[3].length)]],
+        ozelNitelikliKisiselVeri: [veriGirisiData[4][Math.floor(Math.random() * veriGirisiData[4].length)]],
+        islemeAmaclari: [veriGirisiData[5][Math.floor(Math.random() * veriGirisiData[5].length)]],
+        ilgiliKisi: [veriGirisiData[6][Math.floor(Math.random() * veriGirisiData[6].length)]],
+        hukukiSebebi: [veriGirisiData[7][Math.floor(Math.random() * veriGirisiData[7].length)]],
+        saklamaSuresi: [veriGirisiData[8][Math.floor(Math.random() * veriGirisiData[8].length)]],
+        aliciGruplari: [veriGirisiData[9][Math.floor(Math.random() * veriGirisiData[9].length)]],
+        yabanciUlkelereAktarilanVeriler: [veriGirisiData[10][Math.floor(Math.random() * veriGirisiData[10].length)]],
+        teknikTedbirler: [veriGirisiData[11][Math.floor(Math.random() * veriGirisiData[11].length)]],
+        idariTedbirler: [veriGirisiData[12][Math.floor(Math.random() * veriGirisiData[12].length)]]
+      }
+    })
+    await randomTestData.save();
+    res.redirect("/veri-girisi-son")
+  }
+  catch {
+    message = ("Bir hata meydana geldi.\n Hata kodu:32");
+    res.redirect("/")
+  }
+
+});
 
 
 let port = process.env.PORT;
@@ -1061,7 +1276,7 @@ function capitalizeFirstLetter(text) {
 
 
 
-// async function createData(data,firmId)
+//  function createData(data,firmId)
 // {
 //   const newData = new KvkkData({
 //     firm:firmId,
