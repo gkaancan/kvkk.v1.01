@@ -50,8 +50,8 @@ app.use(passport.session());
 
 
 
-// mongoose.connect(process.env.DATABASE_LINK);
-mongoose.connect("mongodb://localhost:27017/test");
+mongoose.connect(process.env.DATABASE_LINK);
+//mongoose.connect("mongodb://localhost:27017/test");
 
 
 const dataSchema = new mongoose.Schema({
